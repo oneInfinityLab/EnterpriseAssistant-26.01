@@ -23,9 +23,24 @@ builder.Services.AddSingleton<EnterpriseAssistant.Plugins.KnowledgeSearchPlugin>
 builder.Services.AddSingleton<EnterpriseAssistant.Core.Interfaces.IConversationMemoryService, EnterpriseAssistant.Infrastructure.Persistence.InMemoryConversationService>();
 builder.Services.AddSingleton<EnterpriseAssistant.Infrastructure.Authentication.IUserContextService, EnterpriseAssistant.Infrastructure.Authentication.UserContextService>();
 
+builder.Services.AddSingleton<EnterpriseAssistant.Infrastructure.Data.InMemoryIssueRepository>();
+builder.Services.AddSingleton<EnterpriseAssistant.Infrastructure.Data.InMemoryPocRepository>();
+builder.Services.AddSingleton<EnterpriseAssistant.Infrastructure.Data.InMemoryWeekendExclusionRepository>();
+builder.Services.AddSingleton<EnterpriseAssistant.Plugins.IssuePlugin>();
+builder.Services.AddSingleton<EnterpriseAssistant.Plugins.PocPlugin>();
+builder.Services.AddSingleton<EnterpriseAssistant.Plugins.WeekendExclusionPlugin>();
+builder.Services.AddSingleton<EnterpriseAssistant.Web.Services.PluginRegistry>();
+
 builder.Services.AddControllers();
 
 var app = builder.Build();
+
+// Business Logic: Register available workflow plugins for discovery.
+var pluginRegistry = app.Services.GetRequiredService<EnterpriseAssistant.Web.Services.PluginRegistry>();
+pluginRegistry.RegisterPlugin(app.Services.GetRequiredService<EnterpriseAssistant.Plugins.KnowledgeSearchPlugin>());
+pluginRegistry.RegisterPlugin(app.Services.GetRequiredService<EnterpriseAssistant.Plugins.IssuePlugin>());
+pluginRegistry.RegisterPlugin(app.Services.GetRequiredService<EnterpriseAssistant.Plugins.PocPlugin>());
+pluginRegistry.RegisterPlugin(app.Services.GetRequiredService<EnterpriseAssistant.Plugins.WeekendExclusionPlugin>());
 
 // Business Logic: Add authentication and authorization middleware.
 // Middleware order matters: authentication before authorization before endpoint mapping.

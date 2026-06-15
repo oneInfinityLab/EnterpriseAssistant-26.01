@@ -6,5 +6,6 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../EnterpriseAssistant.Core/EnterpriseAssistant.Core.csproj" />
+    <ProjectReference Include="../EnterpriseAssistant.Infrastructure/EnterpriseAssistant.Infrastructure.csproj" />
   </ItemGroup>
 </Project>

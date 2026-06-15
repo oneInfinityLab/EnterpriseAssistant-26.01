@@ -1,30 +1,32 @@
 namespace EnterpriseAssistant.Web.Services;
 
+using System;
 using System.Collections.Generic;
-using EnterpriseAssistant.Core.Models;
+using System.Linq;
+using EnterpriseAssistant.Core.Interfaces;
 
 /// <summary>
-/// Registry of available plugins and knowledge providers.
+/// Registry of available plugins.
 /// </summary>
 public sealed class PluginRegistry
 {
-    private readonly IList<PluginResult> _registeredPlugins = new List<PluginResult>();
+    private readonly IList<IPlugin> _registeredPlugins = new List<IPlugin>();
 
     /// <summary>
     /// Gets the registered plugin definitions.
     /// </summary>
-    public IReadOnlyCollection<PluginResult> RegisteredPlugins => (IReadOnlyCollection<PluginResult>)_registeredPlugins;
+    public IReadOnlyCollection<IPlugin> RegisteredPlugins => _registeredPlugins.ToArray();
 
     /// <summary>
-    /// Registers a plugin result placeholder.
+    /// Registers a plugin instance in the application registry.
     /// </summary>
-    public void RegisterPlugin(PluginResult pluginResult)
+    public void RegisterPlugin(IPlugin plugin)
     {
-        if (pluginResult is null)
+        if (plugin is null)
         {
-            throw new ArgumentNullException(nameof(pluginResult));
+            throw new ArgumentNullException(nameof(plugin));
         }
 
-        _registeredPlugins.Add(pluginResult);
+        _registeredPlugins.Add(plugin);
     }
 }
