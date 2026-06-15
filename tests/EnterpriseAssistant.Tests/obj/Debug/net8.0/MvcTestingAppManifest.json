@@ -1,0 +1,6 @@
+{
+  "EnterpriseAssistant.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": "\/workspaces\/EnterpriseAssistant-26.01\/src\/EnterpriseAssistant.Core",
+  "EnterpriseAssistant.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": "\/workspaces\/EnterpriseAssistant-26.01\/src\/EnterpriseAssistant.Infrastructure",
+  "EnterpriseAssistant.Plugins, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": "\/workspaces\/EnterpriseAssistant-26.01\/src\/EnterpriseAssistant.Plugins",
+  "EnterpriseAssistant.Web, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": "\/workspaces\/EnterpriseAssistant-26.01\/src\/EnterpriseAssistant.Web"
+}

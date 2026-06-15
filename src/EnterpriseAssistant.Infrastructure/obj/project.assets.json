@@ -1,0 +1,105 @@
+{
+  "version": 3,
+  "targets": {
+    "net8.0": {
+      "EnterpriseAssistant.Core/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "compile": {
+          "bin/placeholder/EnterpriseAssistant.Core.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/EnterpriseAssistant.Core.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "EnterpriseAssistant.Core/1.0.0": {
+      "type": "project",
+      "path": "../EnterpriseAssistant.Core/EnterpriseAssistant.Core.csproj",
+      "msbuildProject": "../EnterpriseAssistant.Core/EnterpriseAssistant.Core.csproj"
+    }
+  },
+  "projectFileDependencyGroups": {
+    "net8.0": [
+      "EnterpriseAssistant.Core >= 1.0.0"
+    ]
+  },
+  "packageFolders": {
+    "/home/codespace/.nuget/packages/": {}
+  },
+  "project": {
+    "version": "1.0.0",
+    "restore": {
+      "projectUniqueName": "/workspaces/EnterpriseAssistant-26.01/src/EnterpriseAssistant.Infrastructure/EnterpriseAssistant.Infrastructure.csproj",
+      "projectName": "EnterpriseAssistant.Infrastructure",
+      "projectPath": "/workspaces/EnterpriseAssistant-26.01/src/EnterpriseAssistant.Infrastructure/EnterpriseAssistant.Infrastructure.csproj",
+      "packagesPath": "/home/codespace/.nuget/packages/",
+      "outputPath": "/workspaces/EnterpriseAssistant-26.01/src/EnterpriseAssistant.Infrastructure/obj/",
+      "projectStyle": "PackageReference",
+      "configFilePaths": [
+        "/home/codespace/.nuget/NuGet/NuGet.Config"
+      ],
+      "originalTargetFrameworks": [
+        "net8.0"
+      ],
+      "sources": {
+        "https://api.nuget.org/v3/index.json": {}
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "projectReferences": {
+            "/workspaces/EnterpriseAssistant-26.01/src/EnterpriseAssistant.Core/EnterpriseAssistant.Core.csproj": {
+              "projectPath": "/workspaces/EnterpriseAssistant-26.01/src/EnterpriseAssistant.Core/EnterpriseAssistant.Core.csproj"
+            }
+          }
+        }
+      },
+      "warningProperties": {
+        "warnAsError": [
+          "NU1605"
+        ]
+      },
+      "restoreAuditProperties": {
+        "enableAudit": "true",
+        "auditLevel": "low",
+        "auditMode": "direct"
+      },
+      "SdkAnalysisLevel": "10.0.200"
+    },
+    "frameworks": {
+      "net8.0": {
+        "targetAlias": "net8.0",
+        "imports": [
+          "net461",
+          "net462",
+          "net47",
+          "net471",
+          "net472",
+          "net48",
+          "net481"
+        ],
+        "assetTargetFallback": true,
+        "warn": true,
+        "downloadDependencies": [
+          {
+            "name": "Microsoft.AspNetCore.App.Ref",
+            "version": "[8.0.25, 8.0.25]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Ref",
+            "version": "[8.0.25, 8.0.25]"
+          }
+        ],
+        "frameworkReferences": {
+          "Microsoft.NETCore.App": {
+            "privateAssets": "all"
+          }
+        },
+        "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/10.0.200/PortableRuntimeIdentifierGraph.json"
+      }
+    }
+  }
+}

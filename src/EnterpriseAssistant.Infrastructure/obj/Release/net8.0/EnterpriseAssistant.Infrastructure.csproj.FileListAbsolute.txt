@@ -1,0 +1,16 @@
+/workspaces/EnterpriseAssistant-26.01/src/EnterpriseAssistant.Infrastructure/bin/Release/net8.0/EnterpriseAssistant.Infrastructure.deps.json
+/workspaces/EnterpriseAssistant-26.01/src/EnterpriseAssistant.Infrastructure/bin/Release/net8.0/EnterpriseAssistant.Infrastructure.dll
+/workspaces/EnterpriseAssistant-26.01/src/EnterpriseAssistant.Infrastructure/bin/Release/net8.0/EnterpriseAssistant.Infrastructure.pdb
+/workspaces/EnterpriseAssistant-26.01/src/EnterpriseAssistant.Infrastructure/bin/Release/net8.0/EnterpriseAssistant.Core.dll
+/workspaces/EnterpriseAssistant-26.01/src/EnterpriseAssistant.Infrastructure/bin/Release/net8.0/EnterpriseAssistant.Core.pdb
+/workspaces/EnterpriseAssistant-26.01/src/EnterpriseAssistant.Infrastructure/obj/Release/net8.0/EnterpriseAssistant.Infrastructure.csproj.AssemblyReference.cache
+/workspaces/EnterpriseAssistant-26.01/src/EnterpriseAssistant.Infrastructure/obj/Release/net8.0/EnterpriseAssistant.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+/workspaces/EnterpriseAssistant-26.01/src/EnterpriseAssistant.Infrastructure/obj/Release/net8.0/EnterpriseAssistant.Infrastructure.AssemblyInfoInputs.cache
+/workspaces/EnterpriseAssistant-26.01/src/EnterpriseAssistant.Infrastructure/obj/Release/net8.0/EnterpriseAssistant.Infrastructure.AssemblyInfo.cs
+/workspaces/EnterpriseAssistant-26.01/src/EnterpriseAssistant.Infrastructure/obj/Release/net8.0/EnterpriseAssistant.Infrastructure.csproj.CoreCompileInputs.cache
+/workspaces/EnterpriseAssistant-26.01/src/EnterpriseAssistant.Infrastructure/obj/Release/net8.0/EnterpriseAssistant.Infrastructure.sourcelink.json
+/workspaces/EnterpriseAssistant-26.01/src/EnterpriseAssistant.Infrastructure/obj/Release/net8.0/Enterpri.CE447615.Up2Date
+/workspaces/EnterpriseAssistant-26.01/src/EnterpriseAssistant.Infrastructure/obj/Release/net8.0/EnterpriseAssistant.Infrastructure.dll
+/workspaces/EnterpriseAssistant-26.01/src/EnterpriseAssistant.Infrastructure/obj/Release/net8.0/refint/EnterpriseAssistant.Infrastructure.dll
+/workspaces/EnterpriseAssistant-26.01/src/EnterpriseAssistant.Infrastructure/obj/Release/net8.0/EnterpriseAssistant.Infrastructure.pdb
+/workspaces/EnterpriseAssistant-26.01/src/EnterpriseAssistant.Infrastructure/obj/Release/net8.0/ref/EnterpriseAssistant.Infrastructure.dll
