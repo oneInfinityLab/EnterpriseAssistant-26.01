@@ -6,6 +6,7 @@ builder.Services.Configure<EnterpriseAssistant.Infrastructure.Configuration.Azur
 
 builder.Services.AddSingleton<EnterpriseAssistant.Infrastructure.AI.KernelFactory>();
 builder.Services.AddSingleton<EnterpriseAssistant.Infrastructure.AI.AzureOpenAIService>();
+builder.Services.AddSingleton<EnterpriseAssistant.Core.Interfaces.IAssistantOrchestrator, EnterpriseAssistant.Web.Services.AssistantOrchestrator>();
 
 builder.Services.AddControllers();
 
