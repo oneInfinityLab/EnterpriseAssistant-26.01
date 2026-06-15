@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("EnterpriseAssistant.Plugins")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5db397609dd613c185a2e6c96dbf5fc0db3875c3")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6f54024a4f6cfbba6594a71566be9e8843df8f7a")]
 [assembly: System.Reflection.AssemblyProductAttribute("EnterpriseAssistant.Plugins")]
 [assembly: System.Reflection.AssemblyTitleAttribute("EnterpriseAssistant.Plugins")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -4,8 +4,10 @@ using EnterpriseAssistant.Core.Interfaces;
 using EnterpriseAssistant.Core.Models;
 using EnterpriseAssistant.Infrastructure.AI;
 using EnterpriseAssistant.Infrastructure.Configuration;
+using EnterpriseAssistant.Plugins;
 using Microsoft.Extensions.Options;
 using Microsoft.SemanticKernel;
+using System.Linq;
 
 /// <summary>
 /// Business Logic: Central orchestrator that manages the chat flow by coordinating
@@ -16,27 +18,41 @@ public sealed class AssistantOrchestrator : IAssistantOrchestrator
 {
     private readonly KernelFactory _kernelFactory;
     private readonly AzureOpenAIOptions _azureOpenAIOptions;
+    private readonly KnowledgeSearchPlugin _knowledgeSearchPlugin;
+
+    // Business Logic: Define keywords that trigger knowledge search.
+    // These keywords match enterprise document categories and operations.
+    private static readonly string[] KnowledgeSearchKeywords = 
+    { 
+        "issue", 
+        "poc", 
+        "weekend", 
+        "azure vm", 
+        "ariba" 
+    };
 
     public AssistantOrchestrator(
         KernelFactory kernelFactory,
-        IOptions<AzureOpenAIOptions> azureOpenAIOptions)
+        IOptions<AzureOpenAIOptions> azureOpenAIOptions,
+        KnowledgeSearchPlugin knowledgeSearchPlugin)
     {
         _kernelFactory = kernelFactory;
         _azureOpenAIOptions = azureOpenAIOptions.Value;
+        _knowledgeSearchPlugin = knowledgeSearchPlugin;
     }
 
     /// <summary>
     /// Business Logic: Process an incoming message through the assistant pipeline.
-    /// Validates Azure OpenAI configuration, initializes the Semantic Kernel instance,
-    /// and prepares for chat completion execution.
+    /// Validates Azure OpenAI configuration, checks for knowledge search triggers,
+    /// and invokes appropriate response path (knowledge search or Semantic Kernel).
     /// 
     /// Execution Flow:
     /// 1. Validate Azure OpenAI configuration availability
-    /// 2. Create Semantic Kernel instance if configured
-    /// 3. Prepare kernel execution context (plugins/knowledge not invoked at this stage)
-    /// 4. Invoke chat completion via Semantic Kernel
+    /// 2. Check if message contains knowledge search keywords
+    /// 3. If keyword matched: invoke knowledge search and return results
+    /// 4. If no keyword matched: invoke chat completion via Semantic Kernel
     /// 
-    /// Future enhancements will include plugin invocation and knowledge search integration.
+    /// Keywords that trigger knowledge search: "issue", "poc", "weekend", "azure vm", "ariba"
     /// </summary>
     public ChatResponse ProcessMessage(string message)
     {
@@ -54,18 +70,21 @@ public sealed class AssistantOrchestrator : IAssistantOrchestrator
 
         try
         {
+            // Business Logic: Attempt knowledge search first.
+            // If user message contains enterprise operation keywords, search the knowledge base
+            // before invoking the LLM. This provides faster, more accurate responses for known topics.
+            var knowledgeResponse = AttemptKnowledgeSearch(message);
+            if (knowledgeResponse != null)
+            {
+                return knowledgeResponse;
+            }
+
             // Business Logic: Create a fresh Semantic Kernel instance using the factory.
             // The factory handles all Azure OpenAI connection details and service initialization.
             var kernel = _kernelFactory.CreateKernel();
 
-            // Business Logic: Prepare kernel execution path for chat completion.
-            // At this stage, we initialize the kernel but do not invoke plugins or knowledge search.
-            // Future commits will extend this to include:
-            // - Plugin integration (e.g., IssuePlugin, AribaPlugin, WeekendExclusionPlugin)
-            // - Knowledge search functionality
-            // - Dynamic context enrichment from enterprise systems
-            
-            // Execute simple chat completion through Semantic Kernel
+            // Business Logic: Invoke Semantic Kernel for general chat completion.
+            // This path is taken when the user message does not match knowledge search keywords.
             var response = InvokeKernelChatCompletion(kernel, message);
 
             return new ChatResponse
@@ -76,13 +95,78 @@ public sealed class AssistantOrchestrator : IAssistantOrchestrator
         }
         catch (Exception ex)
         {
-            // Business Logic: Capture any kernel execution failures with diagnostic information.
+            // Business Logic: Capture any execution failures with diagnostic information.
             return new ChatResponse
             {
                 Success = false,
                 Message = $"Error processing message: {ex.Message}"
             };
         }
+    }
+
+    /// <summary>
+    /// Business Logic: Attempt to find matching knowledge documents based on user query.
+    /// Checks if the message contains predefined keywords that indicate knowledge search intent.
+    /// Returns null if no knowledge match is found, allowing fallback to Semantic Kernel.
+    /// </summary>
+    private ChatResponse? AttemptKnowledgeSearch(string message)
+    {
+        // Business Logic: Perform case-insensitive keyword matching against the user message.
+        // If any keyword is found, delegate to the knowledge search plugin.
+        var lowerMessage = message.ToLowerInvariant();
+        
+        var matchedKeyword = KnowledgeSearchKeywords
+            .FirstOrDefault(keyword => lowerMessage.Contains(keyword));
+
+        if (string.IsNullOrEmpty(matchedKeyword))
+        {
+            // Business Logic: No keyword match found, return null to trigger normal assistant response.
+            return null;
+        }
+
+        // Business Logic: Execute knowledge search using the plugin.
+        // Block on async operation for synchronous ProcessMessage contract.
+        var searchResult = _knowledgeSearchPlugin.SearchKnowledge(matchedKeyword).Result;
+
+        // Business Logic: Format knowledge search results into a user-friendly response.
+        return FormatKnowledgeSearchResponse(searchResult);
+    }
+
+    /// <summary>
+    /// Business Logic: Format knowledge search results into a structured chat response.
+    /// Presents matching documents with their titles, categories, and summaries.
+    /// </summary>
+    private ChatResponse FormatKnowledgeSearchResponse(KnowledgeSearchResult searchResult)
+    {
+        // Business Logic: Check if the search returned any matching documents.
+        var documentsList = searchResult.Results.ToList();
+        
+        if (!documentsList.Any())
+        {
+            // Business Logic: No documents found for the query, return null to fall back to Semantic Kernel.
+            return new ChatResponse
+            {
+                Success = true,
+                Message = $"No knowledge documents found for: {searchResult.Query}"
+            };
+        }
+
+        // Business Logic: Build a formatted response listing all matching documents.
+        // Include document title, category, and excerpt from content.
+        var formattedResponse = $"Found {documentsList.Count} knowledge document(s) for '{searchResult.Query}':\n\n";
+        
+        foreach (var doc in documentsList)
+        {
+            formattedResponse += $"📄 {doc.Title}\n";
+            formattedResponse += $"   Category: {doc.Category}\n";
+            formattedResponse += $"   {doc.Content}\n\n";
+        }
+
+        return new ChatResponse
+        {
+            Success = true,
+            Message = formattedResponse
+        };
     }
 
     /// <summary>
