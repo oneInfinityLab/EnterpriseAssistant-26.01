@@ -7,4 +7,8 @@
   <ItemGroup>
     <ProjectReference Include="../EnterpriseAssistant.Core/EnterpriseAssistant.Core.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Azure.AI.OpenAI" Version="2.9.0-beta.1" />
+    <PackageReference Include="Microsoft.SemanticKernel" Version="1.77.0" />
+  </ItemGroup>
 </Project>

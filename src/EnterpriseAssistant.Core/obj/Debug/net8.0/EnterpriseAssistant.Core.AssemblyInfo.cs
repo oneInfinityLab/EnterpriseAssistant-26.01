@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("EnterpriseAssistant.Core")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+41ab7daf21f8b9b297951e543da477f49c34a694")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+accbab6690651130a48d7847150fc219133dc643")]
 [assembly: System.Reflection.AssemblyProductAttribute("EnterpriseAssistant.Core")]
 [assembly: System.Reflection.AssemblyTitleAttribute("EnterpriseAssistant.Core")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
