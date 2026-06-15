@@ -7,6 +7,7 @@ using EnterpriseAssistant.Infrastructure.Configuration;
 using EnterpriseAssistant.Plugins;
 using Microsoft.Extensions.Options;
 using Microsoft.SemanticKernel;
+using System;
 using System.Linq;
 
 /// <summary>
@@ -19,6 +20,8 @@ public sealed class AssistantOrchestrator : IAssistantOrchestrator
     private readonly KernelFactory _kernelFactory;
     private readonly AzureOpenAIOptions _azureOpenAIOptions;
     private readonly KnowledgeSearchPlugin _knowledgeSearchPlugin;
+    private readonly IConversationMemoryService _conversationMemoryService;
+    private readonly string _sessionId;
 
     // Business Logic: Define keywords that trigger knowledge search.
     // These keywords match enterprise document categories and operations.
@@ -34,38 +37,53 @@ public sealed class AssistantOrchestrator : IAssistantOrchestrator
     public AssistantOrchestrator(
         KernelFactory kernelFactory,
         IOptions<AzureOpenAIOptions> azureOpenAIOptions,
-        KnowledgeSearchPlugin knowledgeSearchPlugin)
+        KnowledgeSearchPlugin knowledgeSearchPlugin,
+        IConversationMemoryService conversationMemoryService)
     {
         _kernelFactory = kernelFactory;
         _azureOpenAIOptions = azureOpenAIOptions.Value;
         _knowledgeSearchPlugin = knowledgeSearchPlugin;
+        _conversationMemoryService = conversationMemoryService;
+        
+        // Business Logic: Generate a unique session ID for this orchestrator instance.
+        // This enables conversation memory tracking across multiple message exchanges.
+        _sessionId = Guid.NewGuid().ToString();
     }
 
     /// <summary>
     /// Business Logic: Process an incoming message through the assistant pipeline.
     /// Validates Azure OpenAI configuration, checks for knowledge search triggers,
     /// and invokes appropriate response path (knowledge search or Semantic Kernel).
+    /// Stores all messages (user and assistant) in conversation memory.
     /// 
     /// Execution Flow:
-    /// 1. Validate Azure OpenAI configuration availability
-    /// 2. Check if message contains knowledge search keywords
-    /// 3. If keyword matched: invoke knowledge search and return results
-    /// 4. If no keyword matched: invoke chat completion via Semantic Kernel
+    /// 1. Store user message in conversation memory
+    /// 2. Validate Azure OpenAI configuration availability
+    /// 3. Check if message contains knowledge search keywords
+    /// 4. If keyword matched: invoke knowledge search and return results
+    /// 5. If no keyword matched: invoke chat completion via Semantic Kernel
+    /// 6. Store assistant response in conversation memory
     /// 
     /// Keywords that trigger knowledge search: "issue", "poc", "weekend", "azure vm", "ariba"
     /// </summary>
     public ChatResponse ProcessMessage(string message)
     {
+        // Business Logic: Store the incoming user message in conversation memory.
+        // This preserves the conversation history for future context and analysis.
+        StoreUserMessageAsync(message).GetAwaiter().GetResult();
+
         // Business Logic: Validate that Azure OpenAI is properly configured.
         // If endpoint or deployment name is missing, the service cannot function.
         if (string.IsNullOrWhiteSpace(_azureOpenAIOptions.Endpoint) ||
             string.IsNullOrWhiteSpace(_azureOpenAIOptions.DeploymentName))
         {
-            return new ChatResponse
+            var errorResponse = new ChatResponse
             {
                 Success = false,
                 Message = "Azure OpenAI is not configured."
             };
+            StoreAssistantMessageAsync(errorResponse.Message).GetAwaiter().GetResult();
+            return errorResponse;
         }
 
         try
@@ -76,6 +94,8 @@ public sealed class AssistantOrchestrator : IAssistantOrchestrator
             var knowledgeResponse = AttemptKnowledgeSearch(message);
             if (knowledgeResponse != null)
             {
+                // Business Logic: Store assistant response from knowledge search in memory.
+                StoreAssistantMessageAsync(knowledgeResponse.Message).GetAwaiter().GetResult();
                 return knowledgeResponse;
             }
 
@@ -87,6 +107,9 @@ public sealed class AssistantOrchestrator : IAssistantOrchestrator
             // This path is taken when the user message does not match knowledge search keywords.
             var response = InvokeKernelChatCompletion(kernel, message);
 
+            // Business Logic: Store assistant response in conversation memory.
+            StoreAssistantMessageAsync(response).GetAwaiter().GetResult();
+
             return new ChatResponse
             {
                 Success = true,
@@ -96,12 +119,47 @@ public sealed class AssistantOrchestrator : IAssistantOrchestrator
         catch (Exception ex)
         {
             // Business Logic: Capture any execution failures with diagnostic information.
+            var errorMessage = $"Error processing message: {ex.Message}";
+            StoreAssistantMessageAsync(errorMessage).GetAwaiter().GetResult();
+            
             return new ChatResponse
             {
                 Success = false,
-                Message = $"Error processing message: {ex.Message}"
+                Message = errorMessage
             };
         }
+    }
+
+    /// <summary>
+    /// Business Logic: Store a user message in the conversation memory.
+    /// The message is timestamped and marked with the 'user' role.
+    /// </summary>
+    private async System.Threading.Tasks.Task StoreUserMessageAsync(string content)
+    {
+        var userMessage = new ConversationMessage
+        {
+            Role = "user",
+            Content = content,
+            Timestamp = DateTime.UtcNow
+        };
+
+        await _conversationMemoryService.AddMessageAsync(_sessionId, userMessage);
+    }
+
+    /// <summary>
+    /// Business Logic: Store an assistant message in the conversation memory.
+    /// The message is timestamped and marked with the 'assistant' role.
+    /// </summary>
+    private async System.Threading.Tasks.Task StoreAssistantMessageAsync(string content)
+    {
+        var assistantMessage = new ConversationMessage
+        {
+            Role = "assistant",
+            Content = content,
+            Timestamp = DateTime.UtcNow
+        };
+
+        await _conversationMemoryService.AddMessageAsync(_sessionId, assistantMessage);
     }
 
     /// <summary>

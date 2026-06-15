@@ -1,0 +1,40 @@
+# Build outputs
+bin/
+obj/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# VS Code
+.vscode/
+
+# Test artifacts
+TestResults/
+
+# Logs
+*.log
+
+# NuGet
+*.nupkg
+
+# Rider
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Coverage
+coverage/
+*.coverage
+
+# Generated files
+*.dll
+*.pdb
+*.cache
+
+# Azure
+local.settings.json
+appsettings.Development.json
