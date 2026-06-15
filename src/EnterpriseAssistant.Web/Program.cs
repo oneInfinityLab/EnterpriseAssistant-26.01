@@ -9,6 +9,8 @@ builder.Services.AddSingleton<EnterpriseAssistant.Infrastructure.AI.AzureOpenAIS
 builder.Services.AddSingleton<EnterpriseAssistant.Core.Interfaces.IAssistantOrchestrator, EnterpriseAssistant.Web.Services.AssistantOrchestrator>();
 builder.Services.AddSingleton<EnterpriseAssistant.Core.Interfaces.IKnowledgeProvider, EnterpriseAssistant.Infrastructure.Knowledge.MockKnowledgeProvider>();
 builder.Services.AddSingleton<EnterpriseAssistant.Plugins.KnowledgeSearchPlugin>();
+builder.Services.AddSingleton<EnterpriseAssistant.Web.Services.PluginRegistrationService>();
+builder.Services.AddSingleton<EnterpriseAssistant.Web.Services.PluginRegistry>();
 
 builder.Services.AddControllers();
 

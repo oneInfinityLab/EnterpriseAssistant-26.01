@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("EnterpriseAssistant.Tests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6f54024a4f6cfbba6594a71566be9e8843df8f7a")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+709e6766cbf0cfb3d8734afd6e713fc680435cdf")]
 [assembly: System.Reflection.AssemblyProductAttribute("EnterpriseAssistant.Tests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("EnterpriseAssistant.Tests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
