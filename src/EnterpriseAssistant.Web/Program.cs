@@ -7,6 +7,8 @@ builder.Services.Configure<EnterpriseAssistant.Infrastructure.Configuration.Azur
 builder.Services.AddSingleton<EnterpriseAssistant.Infrastructure.AI.KernelFactory>();
 builder.Services.AddSingleton<EnterpriseAssistant.Infrastructure.AI.AzureOpenAIService>();
 builder.Services.AddSingleton<EnterpriseAssistant.Core.Interfaces.IAssistantOrchestrator, EnterpriseAssistant.Web.Services.AssistantOrchestrator>();
+builder.Services.AddSingleton<EnterpriseAssistant.Core.Interfaces.IKnowledgeProvider, EnterpriseAssistant.Infrastructure.Knowledge.MockKnowledgeProvider>();
+builder.Services.AddSingleton<EnterpriseAssistant.Plugins.KnowledgeSearchPlugin>();
 
 builder.Services.AddControllers();
 
