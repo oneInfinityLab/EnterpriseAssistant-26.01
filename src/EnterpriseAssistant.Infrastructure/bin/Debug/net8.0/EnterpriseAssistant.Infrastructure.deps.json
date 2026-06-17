@@ -1,0 +1,39 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "EnterpriseAssistant.Infrastructure/1.0.0": {
+        "dependencies": {
+          "EnterpriseAssistant.Core": "1.0.0"
+        },
+        "runtime": {
+          "EnterpriseAssistant.Infrastructure.dll": {}
+        }
+      },
+      "EnterpriseAssistant.Core/1.0.0": {
+        "runtime": {
+          "EnterpriseAssistant.Core.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "EnterpriseAssistant.Infrastructure/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "EnterpriseAssistant.Core/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
