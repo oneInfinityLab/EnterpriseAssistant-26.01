@@ -1,8 +1,19 @@
 ﻿const sendButton = document.getElementById("sendButton");
 const input = document.getElementById("messageInput");
 const messages = document.getElementById("messages");
+const btnChat =
+    document.getElementById("btnChat");
 const submitIssueBtn =
     document.getElementById("submitIssueBtn");
+// POC workflow controls
+
+const submitPocBtn =
+    document.getElementById("submitPoc");
+
+// Weekend workflow controls
+
+const submitWeekendBtn =
+    document.getElementById("submitWeekend");
 // Sidebar workflow shortcuts
 
 const btnKnowledge = document.getElementById("btnKnowledge");
@@ -145,7 +156,96 @@ function submitIssue() {
     messages.scrollTop =
         messages.scrollHeight;
 }
+// Business Logic:
+// Creates a demo POC request and displays
+// confirmation in the conversation panel.
 
+function submitPoc() {
+
+    const pocName =
+        document.getElementById("pocName").value.trim();
+
+    const customer =
+        document.getElementById("pocCustomer").value.trim();
+
+    const businessNeed =
+        document.getElementById("pocBusinessNeed").value.trim();
+
+    if (!pocName) {
+
+        alert("POC Name is required.");
+        return;
+    }
+
+    const pocId =
+        "POC-" + Date.now();
+
+    messages.innerHTML += `
+        <div class="assistant-msg">
+            <strong>POC Request Created</strong><br>
+            Request Id: ${pocId}<br>
+            POC: ${pocName}<br>
+            Customer: ${customer}<br>
+            Status: Submitted
+        </div>
+    `;
+
+    document.getElementById("pocName").value = "";
+    document.getElementById("pocCustomer").value = "";
+    document.getElementById("pocBusinessNeed").value = "";
+
+    hideWorkflowForms();
+
+    messages.scrollTop =
+        messages.scrollHeight;
+}
+// Business Logic:
+// Creates a demo weekend exclusion request.
+
+function submitWeekendExclusion() {
+
+    const changeRequest =
+        document.getElementById("changeRequest").value.trim();
+
+    const weekendDate =
+        document.getElementById("weekendDate").value;
+
+    const justification =
+        document.getElementById("weekendReason").value.trim();
+
+    if (!changeRequest) {
+
+        alert("Change Request Number is required.");
+        return;
+    }
+
+    const exclusionId =
+        "WE-" + Date.now();
+
+    messages.innerHTML += `
+        <div class="assistant-msg">
+            <strong>Weekend Exclusion Submitted</strong><br>
+            Request Id: ${exclusionId}<br>
+            Change Request: ${changeRequest}<br>
+            Weekend Date: ${weekendDate}<br>
+            Status: Pending Approval
+        </div>
+    `;
+
+    document.getElementById("changeRequest").value = "";
+    document.getElementById("weekendDate").value = "";
+    document.getElementById("weekendReason").value = "";
+
+    hideWorkflowForms();
+
+    messages.scrollTop =
+        messages.scrollHeight;
+}
+
+btnChat?.addEventListener("click", () => {
+
+    hideWorkflowForms();
+});
 btnIssue?.addEventListener("click", () => {
     showWorkflow("issueForm");
 });
@@ -158,3 +258,11 @@ btnWeekend?.addEventListener("click", () => {
     showWorkflow("weekendForm");
 });
 submitIssueBtn?.addEventListener("click", submitIssue);
+submitPocBtn?.addEventListener(
+    "click",
+    submitPoc
+);
+submitWeekendBtn?.addEventListener(
+    "click",
+    submitWeekendExclusion
+);
