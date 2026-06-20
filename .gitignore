@@ -38,3 +38,4 @@ coverage/
 # Azure
 local.settings.json
 appsettings.Development.json
+src/EnterpriseAssistant.Web/Services/AssistantOrchestrator.zip

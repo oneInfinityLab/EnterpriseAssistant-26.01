@@ -1,5 +1,6 @@
 namespace EnterpriseAssistant.Web.Services;
 
+using Azure;
 using EnterpriseAssistant.Core.Interfaces;
 using EnterpriseAssistant.Core.Models;
 using EnterpriseAssistant.Infrastructure.AI;
@@ -25,13 +26,13 @@ public sealed class AssistantOrchestrator : IAssistantOrchestrator
 
     // Business Logic: Define keywords that trigger knowledge search.
     // These keywords match enterprise document categories and operations.
-    private static readonly string[] KnowledgeSearchKeywords = 
-    { 
-        "issue", 
-        "poc", 
-        "weekend", 
-        "azure vm", 
-        "ariba" 
+    private static readonly string[] KnowledgeSearchKeywords =
+    {
+        "issue",
+        "poc",
+        "weekend",
+        "azure vm",
+        "ariba"
     };
 
     public AssistantOrchestrator(
@@ -44,7 +45,7 @@ public sealed class AssistantOrchestrator : IAssistantOrchestrator
         _azureOpenAIOptions = azureOpenAIOptions.Value;
         _knowledgeSearchPlugin = knowledgeSearchPlugin;
         _conversationMemoryService = conversationMemoryService;
-        
+
         // Business Logic: Generate a unique session ID for this orchestrator instance.
         // This enables conversation memory tracking across multiple message exchanges.
         _sessionId = Guid.NewGuid().ToString();
@@ -72,19 +73,13 @@ public sealed class AssistantOrchestrator : IAssistantOrchestrator
         // This preserves the conversation history for future context and analysis.
         StoreUserMessageAsync(message).GetAwaiter().GetResult();
 
-        // Business Logic: Validate that Azure OpenAI is properly configured.
-        // If endpoint or deployment name is missing, the service cannot function.
-        if (string.IsNullOrWhiteSpace(_azureOpenAIOptions.Endpoint) ||
-            string.IsNullOrWhiteSpace(_azureOpenAIOptions.DeploymentName))
-        {
-            var errorResponse = new ChatResponse
-            {
-                Success = false,
-                Message = "Azure OpenAI is not configured."
-            };
-            StoreAssistantMessageAsync(errorResponse.Message).GetAwaiter().GetResult();
-            return errorResponse;
-        }
+        // Business Logic:
+        // If Azure OpenAI is not configured, continue operating
+        // in local demo mode instead of failing.
+
+        var demoMode =
+            string.IsNullOrWhiteSpace(_azureOpenAIOptions.Endpoint) ||
+            string.IsNullOrWhiteSpace(_azureOpenAIOptions.DeploymentName);
 
         try
         {
@@ -99,13 +94,17 @@ public sealed class AssistantOrchestrator : IAssistantOrchestrator
                 return knowledgeResponse;
             }
 
-            // Business Logic: Create a fresh Semantic Kernel instance using the factory.
-            // The factory handles all Azure OpenAI connection details and service initialization.
-            var kernel = _kernelFactory.CreateKernel();
+            string response;
 
-            // Business Logic: Invoke Semantic Kernel for general chat completion.
-            // This path is taken when the user message does not match knowledge search keywords.
-            var response = InvokeKernelChatCompletion(kernel, message);
+            if (demoMode)
+            {
+                response = GetDemoResponse(message);
+            }
+            else
+            {
+                var kernel = _kernelFactory.CreateKernel();
+                response = InvokeKernelChatCompletion(kernel, message);
+            }
 
             // Business Logic: Store assistant response in conversation memory.
             StoreAssistantMessageAsync(response).GetAwaiter().GetResult();
@@ -121,7 +120,7 @@ public sealed class AssistantOrchestrator : IAssistantOrchestrator
             // Business Logic: Capture any execution failures with diagnostic information.
             var errorMessage = $"Error processing message: {ex.Message}";
             StoreAssistantMessageAsync(errorMessage).GetAwaiter().GetResult();
-            
+
             return new ChatResponse
             {
                 Success = false,
@@ -129,7 +128,53 @@ public sealed class AssistantOrchestrator : IAssistantOrchestrator
             };
         }
     }
+    /// <summary>
+    /// Business Logic:
+    /// Local Demo Mode responses when Azure OpenAI
+    /// is unavailable.
+    /// </summary>
+    private string GetDemoResponse(string message)
+    {
+        var lower = message.ToLowerInvariant();
 
+        if (lower.Contains("issue"))
+        {
+            return "Issue workflow detected. Use the Raise Issue module to create a support request.";
+        }
+
+        if (lower.Contains("poc"))
+        {
+            return "POC workflow detected. Use the Request POC module.";
+        }
+
+        if (lower.Contains("weekend"))
+        {
+            return "Weekend exclusion workflow detected.";
+        }
+
+        if (lower.Contains("azure"))
+        {
+            return "Azure VM workflow detected.";
+        }
+
+        if (lower.Contains("ariba"))
+        {
+            return "Ariba operation workflow detected.";
+        }
+
+        return @"Hello Dikshant 👋
+
+Available capabilities:
+
+• Knowledge Search
+• Raise Issue
+• Request POC
+• Weekend Exclusions
+• Azure VM Actions
+• Ariba Operations
+
+Azure OpenAI is currently running in Demo Mode.";
+    }
     /// <summary>
     /// Business Logic: Store a user message in the conversation memory.
     /// The message is timestamped and marked with the 'user' role.
@@ -172,7 +217,7 @@ public sealed class AssistantOrchestrator : IAssistantOrchestrator
         // Business Logic: Perform case-insensitive keyword matching against the user message.
         // If any keyword is found, delegate to the knowledge search plugin.
         var lowerMessage = message.ToLowerInvariant();
-        
+
         var matchedKeyword = KnowledgeSearchKeywords
             .FirstOrDefault(keyword => lowerMessage.Contains(keyword));
 
@@ -198,7 +243,7 @@ public sealed class AssistantOrchestrator : IAssistantOrchestrator
     {
         // Business Logic: Check if the search returned any matching documents.
         var documentsList = searchResult.Results.ToList();
-        
+
         if (!documentsList.Any())
         {
             // Business Logic: No documents found for the query, return null to fall back to Semantic Kernel.
@@ -212,7 +257,7 @@ public sealed class AssistantOrchestrator : IAssistantOrchestrator
         // Business Logic: Build a formatted response listing all matching documents.
         // Include document title, category, and excerpt from content.
         var formattedResponse = $"Found {documentsList.Count} knowledge document(s) for '{searchResult.Query}':\n\n";
-        
+
         foreach (var doc in documentsList)
         {
             formattedResponse += $"📄 {doc.Title}\n";

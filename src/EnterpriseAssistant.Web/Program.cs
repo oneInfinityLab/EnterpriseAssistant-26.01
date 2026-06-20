@@ -1,12 +1,28 @@
-// App startup
+using System.Security.Claims;
+using System.Text.Encodings.Web;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.Identity.Web;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Business Logic: Configure Microsoft Entra ID authentication.
-// Loads AzureAd settings from configuration and sets up OpenID Connect authentication.
-builder.Services.AddAuthentication("OpenIdConnect")
-    .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AzureAd"));
+var azureAdSection = builder.Configuration.GetSection("AzureAd");
+var useEntraId = !string.IsNullOrWhiteSpace(azureAdSection["Instance"])
+    && !string.IsNullOrWhiteSpace(azureAdSection["TenantId"])
+    && !string.IsNullOrWhiteSpace(azureAdSection["ClientId"]);
+
+if (useEntraId)
+{
+    builder.Services.AddAuthentication("OpenIdConnect")
+        .AddMicrosoftIdentityWebApp(azureAdSection);
+}
+else
+{
+    builder.Services.AddAuthentication(DemoAuthenticationHandler.SchemeName)
+        .AddScheme<AuthenticationSchemeOptions, DemoAuthenticationHandler>(
+            DemoAuthenticationHandler.SchemeName,
+            _ => { });
+}
 
 // Business Logic: Configure authorization for the application.
 // Ensures endpoints are protected by authentication when using [Authorize] attribute.
@@ -32,6 +48,18 @@ builder.Services.AddSingleton<EnterpriseAssistant.Plugins.WeekendExclusionPlugin
 builder.Services.AddSingleton<EnterpriseAssistant.Web.Services.PluginRegistry>();
 
 builder.Services.AddControllers();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowUi",
+        policy =>
+        {
+            policy.AllowAnyOrigin()
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
@@ -44,12 +72,44 @@ pluginRegistry.RegisterPlugin(app.Services.GetRequiredService<EnterpriseAssistan
 
 // Business Logic: Add authentication and authorization middleware.
 // Middleware order matters: authentication before authorization before endpoint mapping.
+app.UseDefaultFiles();
+app.UseStaticFiles();
+app.UseCors("AllowUi");
+app.UseSwagger();
+app.UseSwaggerUI();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-app.MapGet("/", () => "Enterprise Assistant V1");
 
+app.MapFallbackToFile("index.html");
 app.Run();
 
 public partial class Program { }
+
+internal sealed class DemoAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
+{
+    public const string SchemeName = "Demo";
+
+    public DemoAuthenticationHandler(
+        IOptionsMonitor<AuthenticationSchemeOptions> options,
+        ILoggerFactory logger,
+        UrlEncoder encoder)
+        : base(options, logger, encoder)
+    {
+    }
+
+    protected override Task<AuthenticateResult> HandleAuthenticateAsync()
+    {
+        var claims = new[]
+        {
+            new Claim(ClaimTypes.NameIdentifier, "demo-user"),
+            new Claim(ClaimTypes.Name, "Demo User"),
+            new Claim(ClaimTypes.Email, "demo@local")
+        };
+        var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, SchemeName));
+        var ticket = new AuthenticationTicket(principal, SchemeName);
+        return Task.FromResult(AuthenticateResult.Success(ticket));
+    }
+}
