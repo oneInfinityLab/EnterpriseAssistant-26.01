@@ -70,7 +70,10 @@
                 <div>
                     Demo User
                 </div>
-
+                <button id="btnClearChat"
+                        class="btn btn-outline-secondary btn-sm">
+                    Clear Session
+                </button>
             </div>
 
             <div class="chat-container">
@@ -192,7 +195,7 @@
         <aside class="right-panel">
 
             <div class="card panel-card">
-                <h5>Plugin Activity</h5>
+                <h5>Available Plugins</h5>
 
                 <ul>
                     <li>Knowledge Search</li>
@@ -200,6 +203,7 @@
                     <li>POC Plugin</li>
                     <li>Weekend Exclusion</li>
                 </ul>
+
             </div>
 
             <div class="card panel-card">
@@ -217,7 +221,15 @@
                 <p>Knowledge Search : Ready</p>
                 <p>Plugins : Loaded</p>
             </div>
+            <div class="card panel-card">
+                <h5>Assistant Activity</h5>
 
+                <ul id="activityLog" class="activity-log">
+                    <li>System Started</li>
+                </ul>
+            </div> 
+        
+            
         </aside>
 
     </div>

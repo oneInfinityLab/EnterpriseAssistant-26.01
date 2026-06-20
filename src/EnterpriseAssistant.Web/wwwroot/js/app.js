@@ -1,4 +1,6 @@
-﻿const sendButton = document.getElementById("sendButton");
+﻿const pluginActivity =
+    document.getElementById("pluginActivity");
+const sendButton = document.getElementById("sendButton");
 const input = document.getElementById("messageInput");
 const messages = document.getElementById("messages");
 const btnChat =
@@ -33,7 +35,9 @@ sendButton.addEventListener("click", sendMessage);
 // Quick launch workflow actions from sidebar.
 
 btnKnowledge?.addEventListener("click", () => {
-    input.value = "knowledge search";
+    logPluginActivity(
+        "Knowledge Search Plugin Executed"
+    );
     sendMessage();
 });
 
@@ -116,7 +120,27 @@ function hideWorkflowForms() {
     document.getElementById("pocForm").classList.add("d-none");
     document.getElementById("weekendForm").classList.add("d-none");
 }
+// Business Logic:
+// Return assistant to normal chat mode.
 
+function resetToChatMode() {
+
+    hideWorkflowForms();
+
+    input.value = "";
+    input.focus();
+    document
+        .querySelectorAll("input, textarea")
+        .forEach(control => {
+
+            if (control.id !== "messageInput")
+                control.value = "";
+        });
+
+    logPluginActivity(
+        "Returned to Chat Assistant"
+    );
+}
 function showWorkflow(formId) {
 
     hideWorkflowForms();
@@ -150,7 +174,9 @@ function submitIssue() {
             Status: Submitted
         </div>
     `;
-
+    logPluginActivity(
+        "Issue Plugin Executed"
+    );
     hideWorkflowForms();
 
     messages.scrollTop =
@@ -189,7 +215,9 @@ function submitPoc() {
             Status: Submitted
         </div>
     `;
-
+    logPluginActivity(
+        "POC Plugin Executed"
+    );
     document.getElementById("pocName").value = "";
     document.getElementById("pocCustomer").value = "";
     document.getElementById("pocBusinessNeed").value = "";
@@ -231,7 +259,9 @@ function submitWeekendExclusion() {
             Status: Pending Approval
         </div>
     `;
-
+    logPluginActivity(
+        "Weekend Exclusion Plugin Executed"
+    );
     document.getElementById("changeRequest").value = "";
     document.getElementById("weekendDate").value = "";
     document.getElementById("weekendReason").value = "";
@@ -242,9 +272,29 @@ function submitWeekendExclusion() {
         messages.scrollHeight;
 }
 
+// Business Logic:
+// Records plugin execution activity.
+
+function logPluginActivity(message) {
+
+    const activityLog =
+        document.getElementById("activityLog");
+
+    if (!activityLog)
+        return;
+
+    const item =
+        document.createElement("li");
+
+    item.innerText =
+        `${new Date().toLocaleTimeString()} - ${message}`;
+
+    activityLog.prepend(item);
+}
+
 btnChat?.addEventListener("click", () => {
 
-    hideWorkflowForms();
+    resetToChatMode();
 });
 btnIssue?.addEventListener("click", () => {
     showWorkflow("issueForm");
