@@ -91,7 +91,87 @@
                     </div>
 
                 </div>
+                <!-- Workflow Container -->
+                <div id="workflowContainer" class="workflow-container d-none">
 
+                    <div id="issueForm" class="workflow-form d-none">
+
+                        <h5>Raise Issue</h5>
+
+                        <input id="issueTitle"
+                               class="form-control mb-2"
+                               placeholder="Issue Title" />
+
+                        <textarea id="issueDescription"
+                                  class="form-control mb-2"
+                                  rows="3"
+                                  placeholder="Issue Description"></textarea>
+
+                        <select id="issuePriority"
+                                class="form-select mb-2">
+
+                            <option>Low</option>
+                            <option>Medium</option>
+                            <option>High</option>
+
+                        </select>
+
+                        <button id="submitIssueBtn"
+                                class="btn btn-primary">
+                            Submit Issue
+                        </button>
+
+                    </div>
+
+                    <div id="pocForm" class="workflow-form d-none">
+
+                        <h5>Request POC</h5>
+
+                        <input id="pocName"
+                               class="form-control mb-2"
+                               placeholder="POC Name" />
+
+                        <input id="pocCustomer"
+                               class="form-control mb-2"
+                               placeholder="Customer Name" />
+
+                        <textarea id="pocBusinessNeed"
+                                  class="form-control mb-2"
+                                  rows="3"
+                                  placeholder="Business Need"></textarea>
+
+                        <button id="submitPoc"
+                                class="btn btn-success">
+                            Submit POC
+                        </button>
+
+                    </div>
+
+                    <div id="weekendForm" class="workflow-form d-none">
+
+                        <h5>Weekend Exclusion</h5>
+
+                        <input id="changeRequest"
+                               class="form-control mb-2"
+                               placeholder="Change Request Number" />
+
+                        <input id="weekendDate"
+                               type="date"
+                               class="form-control mb-2" />
+
+                        <textarea id="weekendReason"
+                                  class="form-control mb-2"
+                                  rows="3"
+                                  placeholder="Justification"></textarea>
+
+                        <button id="submitWeekend"
+                                class="btn btn-warning">
+                            Submit Exclusion
+                        </button>
+
+                    </div>
+
+                </div>
                 <div class="input-row">
 
                     <input id="messageInput"

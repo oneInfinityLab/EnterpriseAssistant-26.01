@@ -1,7 +1,8 @@
 ﻿const sendButton = document.getElementById("sendButton");
 const input = document.getElementById("messageInput");
 const messages = document.getElementById("messages");
-
+const submitIssueBtn =
+    document.getElementById("submitIssueBtn");
 // Sidebar workflow shortcuts
 
 const btnKnowledge = document.getElementById("btnKnowledge");
@@ -22,21 +23,6 @@ sendButton.addEventListener("click", sendMessage);
 
 btnKnowledge?.addEventListener("click", () => {
     input.value = "knowledge search";
-    sendMessage();
-});
-
-btnIssue?.addEventListener("click", () => {
-    input.value = "issue";
-    sendMessage();
-});
-
-btnPoc?.addEventListener("click", () => {
-    input.value = "poc";
-    sendMessage();
-});
-
-btnWeekend?.addEventListener("click", () => {
-    input.value = "weekend";
     sendMessage();
 });
 
@@ -111,3 +97,64 @@ async function sendMessage() {
 
     messages.scrollTop = messages.scrollHeight;
 }
+function hideWorkflowForms() {
+
+    document.getElementById("workflowContainer").classList.add("d-none");
+
+    document.getElementById("issueForm").classList.add("d-none");
+    document.getElementById("pocForm").classList.add("d-none");
+    document.getElementById("weekendForm").classList.add("d-none");
+}
+
+function showWorkflow(formId) {
+
+    hideWorkflowForms();
+
+    document.getElementById("workflowContainer").classList.remove("d-none");
+    document.getElementById(formId).classList.remove("d-none");
+}
+function submitIssue() {
+
+    const title =
+        document.getElementById("issueTitle").value;
+
+    const description =
+        document.getElementById("issueDescription").value;
+
+    const priority =
+        document.getElementById("issuePriority").value;
+
+    if (!title) {
+
+        alert("Issue title is required.");
+        return;
+    }
+
+    messages.innerHTML += `
+        <div class="assistant-msg">
+            <strong>Issue Created</strong><br>
+            Id: INC-${Date.now()}<br>
+            Title: ${title}<br>
+            Priority: ${priority}<br>
+            Status: Submitted
+        </div>
+    `;
+
+    hideWorkflowForms();
+
+    messages.scrollTop =
+        messages.scrollHeight;
+}
+
+btnIssue?.addEventListener("click", () => {
+    showWorkflow("issueForm");
+});
+
+btnPoc?.addEventListener("click", () => {
+    showWorkflow("pocForm");
+});
+
+btnWeekend?.addEventListener("click", () => {
+    showWorkflow("weekendForm");
+});
+submitIssueBtn?.addEventListener("click", submitIssue);
