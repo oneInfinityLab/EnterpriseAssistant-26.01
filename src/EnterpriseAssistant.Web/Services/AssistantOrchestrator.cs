@@ -86,6 +86,20 @@ public sealed class AssistantOrchestrator : IAssistantOrchestrator
         try
         {
             var discoveredPlugin = DiscoverPlugin(message);
+            // Business Logic:
+            // Attempt plugin routing before
+            // falling back to knowledge search.
+            var routedResponse = AttemptPluginRouting(message);
+
+            if (routedResponse != null)
+            {
+                StoreAssistantMessageAsync(
+                    routedResponse.Message)
+                    .GetAwaiter()
+                    .GetResult();
+
+                return routedResponse;
+            }
             // Business Logic: Attempt knowledge search first.
             // If user message contains enterprise operation keywords, search the knowledge base
             // before invoking the LLM. This provides faster, more accurate responses for known topics.
@@ -271,6 +285,31 @@ Azure OpenAI is currently running in Demo Mode.";
         }
 
         return null;
+    }
+
+    /// <summary>
+    /// Business Logic:
+    /// Routes user requests to the appropriate
+    /// enterprise plugin based on discovery results.
+    /// </summary>
+    private ChatResponse? AttemptPluginRouting(
+        string message)
+    {
+        var discoveredPlugin =
+            DiscoverPlugin(message);
+
+        if (string.IsNullOrWhiteSpace(
+            discoveredPlugin))
+        {
+            return null;
+        }
+
+        return new ChatResponse
+        {
+            Success = true,
+            Message =
+                $"Plugin Routing: {discoveredPlugin} selected."
+        };
     }
 
     /// <summary>
