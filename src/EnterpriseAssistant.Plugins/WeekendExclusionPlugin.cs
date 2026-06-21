@@ -17,6 +17,17 @@ public sealed class WeekendExclusionPlugin : IPlugin
 
     public string Name => nameof(WeekendExclusionPlugin);
 
+    public string Description =>
+    "Handles weekend exclusion workflows.";
+
+    public IReadOnlyList<string> Keywords =>
+    [
+        "weekend",
+    "change",
+    "release",
+    "deployment"
+    ];
+
     public WeekendExclusionPlugin(InMemoryWeekendExclusionRepository repository, IUserContextService userContextService)
     {
         _repository = repository;

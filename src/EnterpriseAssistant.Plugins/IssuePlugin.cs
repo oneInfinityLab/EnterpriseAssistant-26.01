@@ -16,6 +16,17 @@ public sealed class IssuePlugin : IPlugin
     private readonly IUserContextService _userContextService;
 
     public string Name => nameof(IssuePlugin);
+    public string Description =>
+    "Handles issue creation and issue tracking workflows.";
+
+    public IReadOnlyList<string> Keywords =>
+    [
+        "issue",
+    "incident",
+    "ticket",
+    "support",
+    "problem"
+    ];
 
     public IssuePlugin(InMemoryIssueRepository repository, IUserContextService userContextService)
     {

@@ -14,6 +14,18 @@ public sealed class KnowledgeSearchPlugin : IPlugin
 
     public string Name => "KnowledgeSearchPlugin";
 
+    public string Description =>
+    "Searches enterprise knowledge sources.";
+
+    public IReadOnlyList<string> Keywords =>
+    [
+        "knowledge",
+    "search",
+    "document",
+    "wiki",
+    "policy"
+    ];
+
     public KnowledgeSearchPlugin(IKnowledgeProvider knowledgeProvider)
     {
         _knowledgeProvider = knowledgeProvider;

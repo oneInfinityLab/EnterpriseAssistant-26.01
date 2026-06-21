@@ -17,6 +17,16 @@ public sealed class PocPlugin : IPlugin
 
     public string Name => nameof(PocPlugin);
 
+    public string Description =>
+    "Handles proof of concept request workflows.";
+
+    public IReadOnlyList<string> Keywords =>
+    [
+        "poc",
+    "demo",
+    "prototype",
+    "customer"
+    ];
     public PocPlugin(InMemoryPocRepository repository, IUserContextService userContextService)
     {
         _repository = repository;
