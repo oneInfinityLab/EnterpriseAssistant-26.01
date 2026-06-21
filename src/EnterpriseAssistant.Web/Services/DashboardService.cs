@@ -1,6 +1,7 @@
 ﻿namespace EnterpriseAssistant.Web.Services;
 
 using EnterpriseAssistant.Core.Models;
+using EnterpriseAssistant.Core.Models.Dashboard;
 using EnterpriseAssistant.Infrastructure.Data;
 
 /// <summary>
@@ -58,5 +59,56 @@ public sealed class DashboardService
             WeekendExclusionCount =
                 _weekendRepository.GetWeekendExclusionCount()
         };
+    }
+    /// <summary>
+    /// Business Logic:
+    /// Returns the most recent workflow
+    /// requests across all supported
+    /// enterprise workflow types.
+    /// </summary>
+    public IReadOnlyList<RecentRequestDto>
+    GetRecentRequests()
+    {
+        var requests =
+            new List<RecentRequestDto>();
+
+        foreach (var issue in _issueRepository.GetAll())
+        {
+            requests.Add(
+                new RecentRequestDto
+                {
+                    Type = "Issue",
+                    Id = issue.Id,
+                    Title = issue.Title
+                });
+        }
+
+        foreach (var poc in _pocRepository.GetAll())
+        {
+            requests.Add(
+                new RecentRequestDto
+                {
+                    Type = "POC",
+                    Id = poc.Id,
+                    Title = poc.Title
+                });
+        }
+
+        foreach (var weekend in
+            _weekendRepository.GetAll())
+        {
+            requests.Add(
+                new RecentRequestDto
+                {
+                    Type = "Weekend",
+                    Id = weekend.Id,
+                    Title = weekend.ApplicationName
+                });
+        }
+
+        return requests
+            .TakeLast(10)
+            .Reverse()
+            .ToList();
     }
 }

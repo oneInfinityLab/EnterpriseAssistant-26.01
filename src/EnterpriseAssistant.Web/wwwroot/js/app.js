@@ -223,7 +223,7 @@ async function submitIssue() {
         );
         
         await loadDashboardMetrics();
-
+        await loadRecentRequests();
         document.getElementById(
             "issueTitle"
         ).value = "";
@@ -308,7 +308,7 @@ async function submitPoc() {
             result.title
         );
         await loadDashboardMetrics();
-
+        await loadRecentRequests();
         document.getElementById(
             "pocName"
         ).value = "";
@@ -427,7 +427,7 @@ Requested By:
             result.changeRequest
         );
         await loadDashboardMetrics();
-
+        await loadRecentRequests();
         document.getElementById(
             "changeRequest"
         ).value = "";
@@ -544,6 +544,66 @@ async function loadDashboardMetrics() {
         metrics.weekendExclusionCount;
 }
 
+// Business Logic:
+// Loads recently executed workflow
+// requests from the dashboard API
+// and renders them in the operations panel.
+
+async function loadRecentRequests() {
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/dashboard/recent-requests");
+
+        if (!response.ok) {
+            return;
+        }
+
+        const requests =
+            await response.json();
+
+        const recentRequests =
+            document.getElementById(
+                "recentRequests");
+
+        recentRequests.innerHTML = "";
+
+        requests.forEach(request => {
+
+            const item =
+                document.createElement("li");
+
+            item.className =
+                "recent-request";
+
+            item.innerHTML = `
+                <div class="request-type">
+                    ${request.type}
+                </div>
+
+                <div>
+                    ${request.title}
+                </div>
+
+                <small>
+                    ${request.id}
+                </small>
+            `;
+
+            recentRequests.appendChild(
+                item);
+        });
+    }
+    catch (error) {
+
+        console.error(
+            "Failed to load recent requests",
+            error);
+    }
+}
+
 btnChat?.addEventListener("click", () => {
 
     resetToChatMode();
@@ -574,3 +634,4 @@ submitWeekendBtn?.addEventListener(
 // repository state.
 
 loadDashboardMetrics();
+loadRecentRequests();

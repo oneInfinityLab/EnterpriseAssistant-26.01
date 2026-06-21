@@ -1,6 +1,7 @@
 ﻿namespace EnterpriseAssistant.Web.Controllers;
 
 using EnterpriseAssistant.Core.Models;
+using EnterpriseAssistant.Core.Models.Dashboard;
 using EnterpriseAssistant.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -49,5 +50,21 @@ public sealed class DashboardController : ControllerBase
             _dashboardService.GetMetrics();
 
         return Ok(metrics);
+    }
+
+    /// <summary>
+    /// Business Logic:
+    /// Retrieves recently executed workflow
+    /// requests for dashboard display.
+    /// </summary>
+    [HttpGet("recent-requests")]
+    [ProducesResponseType(
+        typeof(IReadOnlyList<RecentRequestDto>),
+        StatusCodes.Status200OK)]
+    public ActionResult<IReadOnlyList<RecentRequestDto>>
+    GetRecentRequests()
+    {
+        return Ok(
+            _dashboardService.GetRecentRequests());
     }
 }

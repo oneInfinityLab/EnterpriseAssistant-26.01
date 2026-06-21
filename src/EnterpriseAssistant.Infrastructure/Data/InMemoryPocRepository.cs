@@ -48,4 +48,14 @@ public sealed class InMemoryPocRepository
     {
         return _pocs.Count;
     }
+
+    /// <summary>
+    /// Business Logic:
+    /// Returns all Proof Of Concept requests
+    /// currently stored in the repository.
+    /// </summary>
+    public IReadOnlyList<PocResponse> GetAll()
+    {
+        return _pocs.ToList();
+    }
 }

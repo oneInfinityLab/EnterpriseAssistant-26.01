@@ -48,4 +48,13 @@ public sealed class InMemoryIssueRepository
     {
         return _issues.Count;
     }
+    /// <summary>
+    /// Business Logic:
+    /// Returns all Issue records currently
+    /// stored in the repository.
+    /// </summary>
+    public IReadOnlyList<IssueResponse> GetAll()
+    {
+        return _issues.ToList();
+    }
 }

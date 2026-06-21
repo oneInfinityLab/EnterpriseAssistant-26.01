@@ -61,4 +61,14 @@ public sealed class InMemoryWeekendExclusionRepository
     {
         return _exclusions.Count;
     }
+
+    /// <summary>
+    /// Business Logic:
+    /// Returns all Weekend Exclusion requests
+    /// currently stored in the repository.
+    /// </summary>
+    public IReadOnlyList<WeekendExclusionResponse> GetAll()
+    {
+        return _exclusions.ToList();
+    }
 }
