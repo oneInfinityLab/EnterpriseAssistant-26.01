@@ -315,6 +315,26 @@ Azure OpenAI is currently running in Demo Mode.";
 
         var normalizedMessage =
             message.ToLowerInvariant();
+        // Business Logic:
+        // Retrieval commands should be handled before
+        // plugin discovery because users typically use
+        // plural forms such as "issues" and "pocs"
+        // which may not match plugin discovery keywords.
+
+        if (normalizedMessage.Contains("my issues"))
+        {
+            return GetMyIssues();
+        }
+
+        if (normalizedMessage.Contains("my pocs"))
+        {
+            return GetMyPocs();
+        }
+
+        if (normalizedMessage.Contains("my weekend"))
+        {
+            return GetMyWeekendExclusions();
+        }
         var discoveredPlugin =
             DiscoverPlugin(message);
 
@@ -332,27 +352,7 @@ Azure OpenAI is currently running in Demo Mode.";
         {
             return null;
         }
-        // Business Logic:
-        // Allow users to retrieve workflow items that
-        // were previously created through chat or forms.
-
-        if (plugin.Name == nameof(IssuePlugin) &&
-            normalizedMessage.Contains("my"))
-        {
-            return GetMyIssues();
-        }
-
-        if (plugin.Name == nameof(PocPlugin) &&
-            normalizedMessage.Contains("my"))
-        {
-            return GetMyPocs();
-        }
-
-        if (plugin.Name == nameof(WeekendExclusionPlugin) &&
-            normalizedMessage.Contains("my"))
-        {
-            return GetMyWeekendExclusions();
-        }
+        
         // Business Logic:
         // Execute enterprise workflows directly from
         // conversational commands.
