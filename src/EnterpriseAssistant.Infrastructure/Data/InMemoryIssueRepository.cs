@@ -39,4 +39,13 @@ public sealed class InMemoryIssueRepository
     {
         return _issues.Where(i => i.CreatedBy == createdBy).ToList();
     }
+    /// <summary>
+    /// Business Logic:
+    /// Returns the total number of issue
+    /// records currently stored.
+    /// </summary>
+    public int GetIssueCount()
+    {
+        return _issues.Count;
+    }
 }

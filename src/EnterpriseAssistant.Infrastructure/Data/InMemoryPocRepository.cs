@@ -39,4 +39,13 @@ public sealed class InMemoryPocRepository
     {
         return _pocs.Where(p => p.RequestedBy == requestedBy).ToList();
     }
+    /// <summary>
+    /// Business Logic:
+    /// Returns the total number of proof
+    /// of concept requests currently stored.
+    /// </summary>
+    public int GetPocCount()
+    {
+        return _pocs.Count;
+    }
 }

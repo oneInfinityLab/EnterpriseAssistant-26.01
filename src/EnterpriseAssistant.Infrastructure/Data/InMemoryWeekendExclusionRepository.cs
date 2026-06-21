@@ -52,4 +52,13 @@ public sealed class InMemoryWeekendExclusionRepository
             .Where(exclusion => exclusion.RequestedBy.Equals(requestedBy, StringComparison.OrdinalIgnoreCase))
             .ToList();
     }
+    /// <summary>
+    /// Business Logic:
+    /// Returns the total number of weekend
+    /// exclusion requests currently stored.
+    /// </summary>
+    public int GetWeekendExclusionCount()
+    {
+        return _exclusions.Count;
+    }
 }

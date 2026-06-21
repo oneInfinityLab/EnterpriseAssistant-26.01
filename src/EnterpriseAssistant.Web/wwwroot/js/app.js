@@ -222,11 +222,7 @@ async function submitIssue() {
             result.title
         );
         
-        issueCount++;
-
-        document.getElementById(
-            "issueCount"
-        ).innerText = issueCount;
+        await loadDashboardMetrics();
 
         document.getElementById(
             "issueTitle"
@@ -311,11 +307,7 @@ async function submitPoc() {
             result.id,
             result.title
         );
-        pocCount++;
-
-        document.getElementById(
-            "pocCount"
-        ).innerText = pocCount;
+        await loadDashboardMetrics();
 
         document.getElementById(
             "pocName"
@@ -434,11 +426,7 @@ Requested By:
             result.id,
             result.changeRequest
         );
-        weekendCount++;
-
-        document.getElementById(
-            "weekendCount"
-        ).innerText = weekendCount;
+        await loadDashboardMetrics();
 
         document.getElementById(
             "changeRequest"
@@ -533,6 +521,29 @@ function addRecentRequest(
         );
     }
 }
+
+async function loadDashboardMetrics() {
+
+    const response =
+        await fetch("/api/dashboard/metrics");
+
+    if (!response.ok) {
+        return;
+    }
+
+    const metrics =
+        await response.json();
+
+    document.getElementById("issueCount").textContent =
+        metrics.issueCount;
+
+    document.getElementById("pocCount").textContent =
+        metrics.pocCount;
+
+    document.getElementById("weekendCount").textContent =
+        metrics.weekendExclusionCount;
+}
+
 btnChat?.addEventListener("click", () => {
 
     resetToChatMode();
@@ -557,3 +568,9 @@ submitWeekendBtn?.addEventListener(
     "click",
     submitWeekendExclusion
 );
+// Business Logic:
+// Load dashboard metrics when the application
+// starts so the dashboard reflects current
+// repository state.
+
+loadDashboardMetrics();

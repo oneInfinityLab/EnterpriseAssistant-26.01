@@ -1,8 +1,9 @@
+using EnterpriseAssistant.Web.Services;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.Extensions.Options;
+using Microsoft.Identity.Web;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.Identity.Web;
-using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,6 +47,7 @@ builder.Services.AddSingleton<EnterpriseAssistant.Plugins.IssuePlugin>();
 builder.Services.AddSingleton<EnterpriseAssistant.Plugins.PocPlugin>();
 builder.Services.AddSingleton<EnterpriseAssistant.Plugins.WeekendExclusionPlugin>();
 builder.Services.AddSingleton<EnterpriseAssistant.Web.Services.PluginRegistry>();
+builder.Services.AddSingleton<DashboardService>();
 
 builder.Services.AddControllers();
 builder.Services.AddCors(options =>
