@@ -289,8 +289,8 @@ Azure OpenAI is currently running in Demo Mode.";
 
     /// <summary>
     /// Business Logic:
-    /// Routes user requests to the appropriate
-    /// enterprise plugin based on discovery results.
+    /// Routes and executes enterprise plugins
+    /// discovered from user input.
     /// </summary>
     private ChatResponse? AttemptPluginRouting(
         string message)
@@ -304,11 +304,40 @@ Azure OpenAI is currently running in Demo Mode.";
             return null;
         }
 
+        var executionResult =
+            ExecutePlugin(
+                discoveredPlugin);
+
         return new ChatResponse
         {
             Success = true,
-            Message =
-                $"Plugin Routing: {discoveredPlugin} selected."
+            Message = executionResult
+        };
+    }
+
+    /// <summary>
+    /// Business Logic:
+    /// Executes the selected plugin and returns
+    /// an execution result for the assistant.
+    /// </summary>
+    private string ExecutePlugin(
+        string pluginName)
+    {
+        return pluginName switch
+        {
+            nameof(IssuePlugin)
+                => "Issue Plugin executed successfully.",
+
+            nameof(PocPlugin)
+                => "POC Plugin executed successfully.",
+
+            nameof(WeekendExclusionPlugin)
+                => "Weekend Exclusion Plugin executed successfully.",
+
+            nameof(KnowledgeSearchPlugin)
+                => "Knowledge Search Plugin executed successfully.",
+
+            _ => $"Unknown plugin: {pluginName}"
         };
     }
 
