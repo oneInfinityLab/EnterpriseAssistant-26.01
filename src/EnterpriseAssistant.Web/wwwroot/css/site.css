@@ -140,3 +140,11 @@
 .request-type {
     font-weight: 600;
 }
+/* Business Logic:
+   Displays plugin operational status. */
+
+.plugin-health li {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+}
