@@ -80,4 +80,19 @@ public sealed class DashboardController : ControllerBase
             _dashboardService
                 .GetActivityFeed());
     }
+    /// <summary>
+    /// Business Logic:
+    /// Returns operational health information
+    /// for Enterprise Assistant plugins.
+    /// </summary>
+    [HttpGet("plugin-health")]
+    [ProducesResponseType(
+        typeof(IReadOnlyList<PluginHealthDto>),
+        StatusCodes.Status200OK)]
+    public ActionResult<IReadOnlyList<PluginHealthDto>>
+    GetPluginHealth()
+    {
+        return Ok(
+            _dashboardService.GetPluginHealth());
+    }
 }

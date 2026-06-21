@@ -222,9 +222,7 @@ async function submitIssue() {
             result.title
         );
         
-        await loadDashboardMetrics();
-        await loadRecentRequests();
-        await loadActivityFeed();
+        refreshDashboard();
 
         document.getElementById(
             "issueTitle"
@@ -309,9 +307,7 @@ async function submitPoc() {
             result.id,
             result.title
         );
-        await loadDashboardMetrics();
-        await loadRecentRequests();
-        await loadActivityFeed();
+        refreshDashboard();
 
         document.getElementById(
             "pocName"
@@ -430,9 +426,8 @@ Requested By:
             result.id,
             result.changeRequest
         );
-        await loadDashboardMetrics();
-        await loadRecentRequests();
-        await loadActivityFeed();
+
+        refreshDashboard();
 
         document.getElementById(
             "changeRequest"
@@ -635,6 +630,58 @@ async function loadActivityFeed() {
     });
 }
 
+// Business Logic:
+// Loads plugin operational health information
+// from the dashboard API and updates the
+// Plugin Health dashboard widget.
+
+async function loadPluginHealth() {
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/dashboard/plugin-health");
+
+        if (!response.ok) {
+            return;
+        }
+
+        const plugins =
+            await response.json();
+
+        const container =
+            document.getElementById(
+                "pluginHealth");
+
+        if (!container) {
+            return;
+        }
+
+        container.innerHTML = "";
+
+        plugins.forEach(plugin => {
+
+            const item =
+                document.createElement("li");
+
+            item.innerHTML =
+                `${plugin.pluginName}
+                <span class="status-badge status-success">
+                    ${plugin.status}
+                </span>`;
+
+            container.appendChild(item);
+        });
+    }
+    catch (error) {
+
+        console.error(
+            "Failed to load plugin health",
+            error);
+    }
+}
+
 btnChat?.addEventListener("click", () => {
 
     resetToChatMode();
@@ -659,11 +706,26 @@ submitWeekendBtn?.addEventListener(
     "click",
     submitWeekendExclusion
 );
-// Business Logic:
-// Load dashboard metrics when the application
-// starts so the dashboard reflects current
-// repository state.
 
-loadDashboardMetrics();
-loadRecentRequests();
-loadActivityFeed();
+
+// Business Logic:
+// Refreshes all dashboard widgets so the
+// operational dashboard remains synchronized
+// with backend workflow activity.
+
+function refreshDashboard() {
+
+    loadDashboardMetrics();
+    loadRecentRequests();
+    loadActivityFeed();
+    loadPluginHealth();
+}
+refreshDashboard();
+
+// Business Logic:
+// Keep dashboard information synchronized
+// with backend workflow activity.
+
+setInterval(
+    refreshDashboard,
+    15000);

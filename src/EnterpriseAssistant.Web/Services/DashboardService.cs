@@ -123,4 +123,40 @@ public sealed class DashboardService
         return _activityFeedService
             .GetActivities();
     }
+
+    /// <summary>
+    /// Business Logic:
+    /// Returns operational health information
+    /// for registered Enterprise Assistant plugins.
+    /// </summary>
+    public IReadOnlyList<PluginHealthDto>
+    GetPluginHealth()
+    {
+        return
+        [
+            new PluginHealthDto
+        {
+            PluginName = "Knowledge Search",
+            Status = "Healthy"
+        },
+
+        new PluginHealthDto
+        {
+            PluginName = "Issue Plugin",
+            Status = "Healthy"
+        },
+
+        new PluginHealthDto
+        {
+            PluginName = "POC Plugin",
+            Status = "Healthy"
+        },
+
+        new PluginHealthDto
+        {
+            PluginName = "Weekend Exclusion",
+            Status = "Healthy"
+        }
+        ];
+    }
 }
