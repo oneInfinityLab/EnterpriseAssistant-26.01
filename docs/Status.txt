@@ -1,0 +1,34 @@
+Completed ✅
+UI Loading
+Static Files
+API Routing
+Swagger
+ChatController
+AssistantOrchestrator
+Knowledge Search
+Demo Authentication
+
+Sprint Backlog
+Phase 1 (Demo Polish)
+Sidebar buttons functional
+Enter key support
+Dynamic status panel
+Conversation memory validation
+Phase 2 (Business Workflows)
+Raise Issue form
+Request POC form
+Weekend Exclusion workflow
+Azure VM workflow
+Ariba workflow
+Phase 3 (AI)
+Azure OpenAI
+Semantic Kernel Plugins
+Memory Persistence
+
+v1.0 – Demo Working
+v1.1 – Activity Panel & Workflow Tracking
+v1.2 – Workflow API Layer
+v1.3 – Plugin Orchestration
+v1.4 – Semantic Kernel Function Calling
+v1.5 – Azure OpenAI Integration
+v2.0 – Enterprise Copilot Platform
