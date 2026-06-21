@@ -333,6 +333,27 @@ Azure OpenAI is currently running in Demo Mode.";
             return null;
         }
         // Business Logic:
+        // Allow users to retrieve workflow items that
+        // were previously created through chat or forms.
+
+        if (plugin.Name == nameof(IssuePlugin) &&
+            normalizedMessage.Contains("my"))
+        {
+            return GetMyIssues();
+        }
+
+        if (plugin.Name == nameof(PocPlugin) &&
+            normalizedMessage.Contains("my"))
+        {
+            return GetMyPocs();
+        }
+
+        if (plugin.Name == nameof(WeekendExclusionPlugin) &&
+            normalizedMessage.Contains("my"))
+        {
+            return GetMyWeekendExclusions();
+        }
+        // Business Logic:
         // Execute enterprise workflows directly from
         // conversational commands.
         //
@@ -575,7 +596,152 @@ Azure OpenAI is currently running in Demo Mode.";
         };
     }
 
+    /// <summary>
+    /// Business Logic:
+    /// Retrieves Issues previously created by
+    /// the current authenticated user.
+    ///
+    /// This enables conversational review of
+    /// workflow history directly from chat.
+    ///
+    /// Example:
+    /// "my issues"
+    /// </summary>
+    private ChatResponse GetMyIssues()
+    {
+        var results =
+            _issuePlugin.GetMyIssues(
+                new System.Security.Claims.ClaimsPrincipal(
+                    new System.Security.Claims.ClaimsIdentity(
+                        new[]
+                        {
+                        new System.Security.Claims.Claim(
+                            System.Security.Claims.ClaimTypes.Name,
+                            "Demo User")
+                        })));
 
+        if (!results.Any())
+        {
+            return new ChatResponse
+            {
+                Success = true,
+                Message = "No Issues found."
+            };
+        }
+
+        var response =
+            $"My Issues ({results.Count})\n\n";
+
+        foreach (var issue in results)
+        {
+            response +=
+                $"Id: {issue.Id}\n" +
+                $"Title: {issue.Title}\n" +
+                $"Status: {issue.Status}\n\n";
+        }
+
+        return new ChatResponse
+        {
+            Success = true,
+            Message = response
+        };
+    }
+
+    /// <summary>
+    /// Business Logic:
+    /// Retrieves Proof Of Concept requests
+    /// previously submitted by the current user.
+    ///
+    /// Example:
+    /// "my pocs"
+    /// </summary>
+    private ChatResponse GetMyPocs()
+    {
+        var results =
+            _pocPlugin.GetMyPocs(
+                new System.Security.Claims.ClaimsPrincipal(
+                    new System.Security.Claims.ClaimsIdentity(
+                        new[]
+                        {
+                        new System.Security.Claims.Claim(
+                            System.Security.Claims.ClaimTypes.Name,
+                            "Demo User")
+                        })));
+
+        if (!results.Any())
+        {
+            return new ChatResponse
+            {
+                Success = true,
+                Message = "No POC requests found."
+            };
+        }
+
+        var response =
+            $"My POCs ({results.Count})\n\n";
+
+        foreach (var poc in results)
+        {
+            response +=
+                $"Id: {poc.Id}\n" +
+                $"Title: {poc.Title}\n" +
+                $"Status: {poc.Status}\n\n";
+        }
+
+        return new ChatResponse
+        {
+            Success = true,
+            Message = response
+        };
+    }
+
+    /// <summary>
+    /// Business Logic:
+    /// Retrieves Weekend Exclusion requests
+    /// previously submitted by the current user.
+    ///
+    /// Example:
+    /// "my weekend requests"
+    /// </summary>
+    private ChatResponse GetMyWeekendExclusions()
+    {
+        var results =
+            _weekendExclusionPlugin.GetWeekendExclusions(
+                new System.Security.Claims.ClaimsPrincipal(
+                    new System.Security.Claims.ClaimsIdentity(
+                        new[]
+                        {
+                        new System.Security.Claims.Claim(
+                            System.Security.Claims.ClaimTypes.Name,
+                            "Demo User")
+                        })));
+
+        if (!results.Any())
+        {
+            return new ChatResponse
+            {
+                Success = true,
+                Message = "No Weekend Exclusion requests found."
+            };
+        }
+
+        var response =
+            $"My Weekend Exclusions ({results.Count})\n\n";
+
+        foreach (var request in results)
+        {
+            response +=
+                $"Id: {request.Id}\n" +
+                $"Application: {request.ApplicationName}\n" +
+                $"Status: {request.Status}\n\n";
+        }
+
+        return new ChatResponse
+        {
+            Success = true,
+            Message = response
+        };
+    }
 
     /// <summary>
     /// Business Logic: Format knowledge search results into a structured chat response.

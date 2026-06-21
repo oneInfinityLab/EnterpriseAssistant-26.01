@@ -37,10 +37,40 @@
         background: #0d6efd;
     }
 
+/* Business Logic:
+   Main workspace layout that hosts
+   the chat experience and workflow forms.
+*/
 .main-panel {
     flex: 1;
     display: flex;
     flex-direction: column;
+    min-height: 0;
+}
+
+/* Business Logic:
+   Allows the conversation area to consume
+   available vertical space while keeping
+   the input row anchored at the bottom.
+*/
+.chat-container {
+    flex: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+/* Business Logic:
+   Conversation history becomes independently
+   scrollable when content exceeds available space.
+*/
+.messages {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+    padding-right: 8px;
+    scroll-behavior: smooth;
 }
 
 .topbar {
@@ -58,17 +88,7 @@
     border-radius: 12px;
 }
 
-.chat-container {
-    flex: 1;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-}
 
-.messages {
-    flex: 1;
-    overflow: auto;
-}
 
 .assistant-msg {
     background: white;
@@ -86,15 +106,26 @@
     margin-bottom: 10px;
 }
 
+/* Business Logic:
+   Keeps chat input visible while users
+   review long conversation histories.
+*/
 .input-row {
     display: flex;
     gap: 10px;
+    flex-shrink: 0;
+    margin-top: 10px;
 }
 
+/* Business Logic:
+   Keeps dashboard widgets visible while
+   allowing independent scrolling when needed.
+*/
 .right-panel {
     width: 320px;
     background: white;
     padding: 20px;
+    overflow-y: auto;
 }
 
 .panel-card {
@@ -174,4 +205,17 @@
 .status-success {
     background-color: #198754;
     color: white;
+}
+
+
+/* Business Logic:
+   Conversation history grows independently
+   and becomes scrollable when content exceeds
+   available viewport space.
+*/
+#messages {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+    padding-right: 12px;
 }
