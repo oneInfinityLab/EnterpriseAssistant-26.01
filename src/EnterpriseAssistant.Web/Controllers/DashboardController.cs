@@ -67,4 +67,17 @@ public sealed class DashboardController : ControllerBase
         return Ok(
             _dashboardService.GetRecentRequests());
     }
+    
+    /// <summary>
+    /// Business Logic:
+    /// Returns recent Enterprise Assistant
+    /// activity events for dashboard display.
+    /// </summary>
+    [HttpGet("activity-feed")]
+    public IActionResult GetActivityFeed()
+    {
+        return Ok(
+            _dashboardService
+                .GetActivityFeed());
+    }
 }

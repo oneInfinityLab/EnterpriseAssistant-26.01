@@ -27,6 +27,7 @@ public sealed class AssistantOrchestrator : IAssistantOrchestrator
     private readonly IssuePlugin _issuePlugin;
     private readonly PocPlugin _pocPlugin;
     private readonly WeekendExclusionPlugin _weekendExclusionPlugin;
+    private readonly ActivityFeedService _activityFeedService;
 
     // Business Logic: Define keywords that trigger knowledge search.
     // These keywords match enterprise document categories and operations.
@@ -46,7 +47,7 @@ public sealed class AssistantOrchestrator : IAssistantOrchestrator
         IConversationMemoryService conversationMemoryService, PluginRegistry pluginRegistry,
     IssuePlugin issuePlugin,
     PocPlugin pocPlugin,
-    WeekendExclusionPlugin weekendExclusionPlugin)
+    WeekendExclusionPlugin weekendExclusionPlugin, ActivityFeedService activityFeedService)
     {
         _kernelFactory = kernelFactory;
         _azureOpenAIOptions = azureOpenAIOptions.Value;
@@ -59,6 +60,7 @@ public sealed class AssistantOrchestrator : IAssistantOrchestrator
         // Business Logic: Generate a unique session ID for this orchestrator instance.
         // This enables conversation memory tracking across multiple message exchanges.
         _sessionId = Guid.NewGuid().ToString();
+        _activityFeedService = activityFeedService;
     }
 
     /// <summary>
@@ -471,6 +473,9 @@ Azure OpenAI is currently running in Demo Mode.";
                             "Demo User")
                         })));
 
+        _activityFeedService.AddActivity(
+    $"Issue Created - {result.Title}");
+
         return new ChatResponse
         {
             Success = true,
@@ -528,6 +533,9 @@ Azure OpenAI is currently running in Demo Mode.";
                             "Demo User")
                         })));
 
+        _activityFeedService.AddActivity(
+    $"POC Submitted - {result.Title}");
+
         return new ChatResponse
         {
             Success = true,
@@ -583,6 +591,9 @@ Azure OpenAI is currently running in Demo Mode.";
                                 System.Security.Claims.ClaimTypes.Name,
                                 "Demo User")
                             })));
+
+        _activityFeedService.AddActivity(
+    $"Weekend Exclusion Submitted - {result.ApplicationName}");
 
         return new ChatResponse
         {

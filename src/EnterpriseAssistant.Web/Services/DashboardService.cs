@@ -18,7 +18,7 @@ public sealed class DashboardService
     private readonly InMemoryIssueRepository _issueRepository;
     private readonly InMemoryPocRepository _pocRepository;
     private readonly InMemoryWeekendExclusionRepository _weekendRepository;
-
+    private readonly ActivityFeedService _activityFeedService;
     /// <summary>
     /// Business Logic:
     /// Creates a dashboard service capable of
@@ -28,11 +28,12 @@ public sealed class DashboardService
     public DashboardService(
         InMemoryIssueRepository issueRepository,
         InMemoryPocRepository pocRepository,
-        InMemoryWeekendExclusionRepository weekendRepository)
+        InMemoryWeekendExclusionRepository weekendRepository, ActivityFeedService activityFeedService)
     {
         _issueRepository = issueRepository;
         _pocRepository = pocRepository;
         _weekendRepository = weekendRepository;
+        _activityFeedService = activityFeedService;
     }
 
     /// <summary>
@@ -110,5 +111,16 @@ public sealed class DashboardService
             .TakeLast(10)
             .Reverse()
             .ToList();
+    }
+    /// <summary>
+    /// Business Logic:
+    /// Returns recent Enterprise Assistant
+    /// activity events for dashboard display.
+    /// </summary>
+    public IReadOnlyList<ActivityFeedItemDto>
+    GetActivityFeed()
+    {
+        return _activityFeedService
+            .GetActivities();
     }
 }

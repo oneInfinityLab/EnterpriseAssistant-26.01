@@ -224,6 +224,8 @@ async function submitIssue() {
         
         await loadDashboardMetrics();
         await loadRecentRequests();
+        await loadActivityFeed();
+
         document.getElementById(
             "issueTitle"
         ).value = "";
@@ -309,6 +311,8 @@ async function submitPoc() {
         );
         await loadDashboardMetrics();
         await loadRecentRequests();
+        await loadActivityFeed();
+
         document.getElementById(
             "pocName"
         ).value = "";
@@ -428,6 +432,8 @@ Requested By:
         );
         await loadDashboardMetrics();
         await loadRecentRequests();
+        await loadActivityFeed();
+
         document.getElementById(
             "changeRequest"
         ).value = "";
@@ -604,6 +610,31 @@ async function loadRecentRequests() {
     }
 }
 
+async function loadActivityFeed() {
+
+    const response =
+        await fetch("/api/dashboard/activity-feed");
+
+    const activities =
+        await response.json();
+
+    const activityLog =
+        document.getElementById("activityLog");
+
+    activityLog.innerHTML = "";
+
+    activities.forEach(activity => {
+
+        const li =
+            document.createElement("li");
+
+        li.textContent =
+            activity.message;
+
+        activityLog.appendChild(li);
+    });
+}
+
 btnChat?.addEventListener("click", () => {
 
     resetToChatMode();
@@ -635,3 +666,4 @@ submitWeekendBtn?.addEventListener(
 
 loadDashboardMetrics();
 loadRecentRequests();
+loadActivityFeed();

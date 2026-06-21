@@ -48,6 +48,7 @@ builder.Services.AddSingleton<EnterpriseAssistant.Plugins.PocPlugin>();
 builder.Services.AddSingleton<EnterpriseAssistant.Plugins.WeekendExclusionPlugin>();
 builder.Services.AddSingleton<EnterpriseAssistant.Web.Services.PluginRegistry>();
 builder.Services.AddSingleton<DashboardService>();
+builder.Services.AddSingleton<ActivityFeedService>();
 
 builder.Services.AddControllers();
 builder.Services.AddCors(options =>
