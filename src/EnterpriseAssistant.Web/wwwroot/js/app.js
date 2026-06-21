@@ -213,10 +213,15 @@ async function submitIssue() {
         Created By: ${result.createdBy}
     </div>
 `;
-
         logPluginActivity(
             "Issue Plugin Executed"
         );
+        addRecentRequest(
+            "Issue",
+            result.id,
+            result.title
+        );
+        
         issueCount++;
 
         document.getElementById(
@@ -300,6 +305,11 @@ async function submitPoc() {
 
         logPluginActivity(
             "POC Plugin Executed"
+        );
+        addRecentRequest(
+            "POC",
+            result.id,
+            result.title
         );
         pocCount++;
 
@@ -418,6 +428,12 @@ Requested By:
         logPluginActivity(
             "Weekend Exclusion Plugin Executed"
         );
+
+        addRecentRequest(
+            "Weekend",
+            result.id,
+            result.changeRequest
+        );
         weekendCount++;
 
         document.getElementById(
@@ -470,7 +486,53 @@ function logPluginActivity(message) {
 
     activityLog.prepend(item);
 }
+// Business Logic:
+// Displays recently executed workflow requests
+// in the operations dashboard.
 
+function addRecentRequest(
+    requestType,
+    requestId,
+    requestTitle) {
+
+    const recentRequests =
+        document.getElementById(
+            "recentRequests"
+        );
+
+    if (!recentRequests)
+        return;
+
+    const item =
+        document.createElement("li");
+
+    item.className =
+        "recent-request";
+
+    item.innerHTML = `
+        <div class="request-type">
+            ${requestType}
+        </div>
+
+        <div>
+            ${requestTitle}
+        </div>
+
+        <small>
+            ${requestId}
+        </small>
+    `;
+
+    recentRequests.prepend(item);
+
+    while (
+        recentRequests.children.length > 10
+    ) {
+        recentRequests.removeChild(
+            recentRequests.lastChild
+        );
+    }
+}
 btnChat?.addEventListener("click", () => {
 
     resetToChatMode();

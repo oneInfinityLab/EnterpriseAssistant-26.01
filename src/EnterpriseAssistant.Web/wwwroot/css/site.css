@@ -123,3 +123,20 @@
     font-size: 14px;
     font-weight: 500;
 }
+/* Business Logic:
+   Displays recently executed workflow requests.
+*/
+
+.recent-request {
+    border-bottom: 1px solid #e5e5e5;
+    padding: 8px 0;
+    font-size: 13px;
+}
+
+    .recent-request:last-child {
+        border-bottom: none;
+    }
+
+.request-type {
+    font-weight: 600;
+}
