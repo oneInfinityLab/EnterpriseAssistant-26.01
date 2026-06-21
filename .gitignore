@@ -39,3 +39,6 @@ coverage/
 local.settings.json
 appsettings.Development.json
 src/EnterpriseAssistant.Web/Services/AssistantOrchestrator.zip
+
+# Code backups
+*.zip
