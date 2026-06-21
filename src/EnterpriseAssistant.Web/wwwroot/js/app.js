@@ -3,6 +3,14 @@
 const sendButton = document.getElementById("sendButton");
 const input = document.getElementById("messageInput");
 const messages = document.getElementById("messages");
+// Business Logic:
+// Tracks workflow execution counts
+// during the current application session.
+
+let issueCount = 0;
+let pocCount = 0;
+let weekendCount = 0;
+
 const btnChat =
     document.getElementById("btnChat");
 const submitIssueBtn =
@@ -209,6 +217,11 @@ async function submitIssue() {
         logPluginActivity(
             "Issue Plugin Executed"
         );
+        issueCount++;
+
+        document.getElementById(
+            "issueCount"
+        ).innerText = issueCount;
 
         document.getElementById(
             "issueTitle"
@@ -288,6 +301,11 @@ async function submitPoc() {
         logPluginActivity(
             "POC Plugin Executed"
         );
+        pocCount++;
+
+        document.getElementById(
+            "pocCount"
+        ).innerText = pocCount;
 
         document.getElementById(
             "pocName"
@@ -400,6 +418,11 @@ Requested By:
         logPluginActivity(
             "Weekend Exclusion Plugin Executed"
         );
+        weekendCount++;
+
+        document.getElementById(
+            "weekendCount"
+        ).innerText = weekendCount;
 
         document.getElementById(
             "changeRequest"
