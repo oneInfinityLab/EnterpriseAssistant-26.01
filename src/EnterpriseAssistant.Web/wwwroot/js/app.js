@@ -481,8 +481,8 @@ function logPluginActivity(message) {
     const item =
         document.createElement("li");
 
-    item.innerText =
-        `${new Date().toLocaleTimeString()} - ${message}`;
+    item.innerHTML =
+        `🟢 ${new Date().toLocaleTimeString()} - ${message}`;
 
     activityLog.prepend(item);
 }
