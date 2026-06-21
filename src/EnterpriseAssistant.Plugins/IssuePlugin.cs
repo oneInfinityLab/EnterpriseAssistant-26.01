@@ -1,5 +1,6 @@
 namespace EnterpriseAssistant.Plugins;
 
+using EnterpriseAssistant.Core.Interfaces;
 using EnterpriseAssistant.Core.Models;
 using EnterpriseAssistant.Infrastructure.Authentication;
 using EnterpriseAssistant.Infrastructure.Data;
