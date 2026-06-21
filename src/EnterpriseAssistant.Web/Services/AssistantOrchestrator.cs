@@ -23,6 +23,7 @@ public sealed class AssistantOrchestrator : IAssistantOrchestrator
     private readonly KnowledgeSearchPlugin _knowledgeSearchPlugin;
     private readonly IConversationMemoryService _conversationMemoryService;
     private readonly string _sessionId;
+    private readonly PluginRegistry _pluginRegistry;
 
     // Business Logic: Define keywords that trigger knowledge search.
     // These keywords match enterprise document categories and operations.
@@ -39,12 +40,13 @@ public sealed class AssistantOrchestrator : IAssistantOrchestrator
         KernelFactory kernelFactory,
         IOptions<AzureOpenAIOptions> azureOpenAIOptions,
         KnowledgeSearchPlugin knowledgeSearchPlugin,
-        IConversationMemoryService conversationMemoryService)
+        IConversationMemoryService conversationMemoryService, PluginRegistry pluginRegistry)
     {
         _kernelFactory = kernelFactory;
         _azureOpenAIOptions = azureOpenAIOptions.Value;
         _knowledgeSearchPlugin = knowledgeSearchPlugin;
         _conversationMemoryService = conversationMemoryService;
+        _pluginRegistry = pluginRegistry;
 
         // Business Logic: Generate a unique session ID for this orchestrator instance.
         // This enables conversation memory tracking across multiple message exchanges.
@@ -83,6 +85,7 @@ public sealed class AssistantOrchestrator : IAssistantOrchestrator
 
         try
         {
+            var discoveredPlugin = DiscoverPlugin(message);
             // Business Logic: Attempt knowledge search first.
             // If user message contains enterprise operation keywords, search the knowledge base
             // before invoking the LLM. This provides faster, more accurate responses for known topics.
@@ -135,6 +138,13 @@ public sealed class AssistantOrchestrator : IAssistantOrchestrator
     /// </summary>
     private string GetDemoResponse(string message)
     {
+        var discoveredPlugin = DiscoverPlugin(message);
+
+        if (!string.IsNullOrWhiteSpace(discoveredPlugin))
+        {
+            return
+                $"Plugin Discovery: {discoveredPlugin} selected.";
+        }
         var lower = message.ToLowerInvariant();
 
         if (lower.Contains("issue"))
@@ -233,6 +243,34 @@ Azure OpenAI is currently running in Demo Mode.";
 
         // Business Logic: Format knowledge search results into a user-friendly response.
         return FormatKnowledgeSearchResponse(searchResult);
+    }
+
+    /// <summary>
+    /// Business Logic:
+    /// Attempts to discover a registered plugin
+    /// based on user supplied text.
+    /// </summary>
+    private string? DiscoverPlugin(string message)
+    {
+        var words =
+            message
+                .ToLowerInvariant()
+                .Split(
+                    ' ',
+                    StringSplitOptions.RemoveEmptyEntries);
+
+        foreach (var word in words)
+        {
+            var plugin =
+                _pluginRegistry.FindPlugin(word);
+
+            if (plugin != null)
+            {
+                return plugin.Name;
+            }
+        }
+
+        return null;
     }
 
     /// <summary>
