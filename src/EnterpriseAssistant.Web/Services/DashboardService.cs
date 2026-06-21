@@ -159,4 +159,70 @@ public sealed class DashboardService
         }
         ];
     }
+    /// <summary>
+    /// Business Logic:
+    /// Generates workflow analytics from
+    /// repository-backed workflow data.
+    /// </summary>
+    public WorkflowAnalyticsDto
+    GetWorkflowAnalytics()
+    {
+        var issueCount =
+            _issueRepository.GetIssueCount();
+
+        var pocCount =
+            _pocRepository.GetPocCount();
+
+        var weekendCount =
+            _weekendRepository
+                .GetWeekendExclusionCount();
+
+        var total =
+            issueCount +
+            pocCount +
+            weekendCount;
+
+        if (total == 0)
+        {
+            return new WorkflowAnalyticsDto
+            {
+                TotalRequests = 0,
+                MostUsedWorkflow = "None"
+            };
+        }
+
+        var workflowCounts =
+            new Dictionary<string, int>
+            {
+                ["Issue"] = issueCount,
+                ["POC"] = pocCount,
+                ["Weekend"] = weekendCount
+            };
+
+        return new WorkflowAnalyticsDto
+        {
+            TotalRequests = total,
+
+            MostUsedWorkflow =
+                workflowCounts
+                    .OrderByDescending(x => x.Value)
+                    .First()
+                    .Key,
+
+            IssuePercentage =
+                Math.Round(
+                    issueCount * 100.0 / total,
+                    2),
+
+            PocPercentage =
+                Math.Round(
+                    pocCount * 100.0 / total,
+                    2),
+
+            WeekendPercentage =
+                Math.Round(
+                    weekendCount * 100.0 / total,
+                    2)
+        };
+    }
 }

@@ -682,6 +682,68 @@ async function loadPluginHealth() {
     }
 }
 
+// Business Logic:
+// Loads workflow analytics information
+// for operational dashboard reporting.
+
+async function loadWorkflowAnalytics() {
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/dashboard/workflow-analytics");
+
+        if (!response.ok) {
+            return;
+        }
+
+        const analytics =
+            await response.json();
+
+        const container =
+            document.getElementById(
+                "workflowAnalytics");
+
+        if (!container) {
+            return;
+        }
+
+        container.innerHTML = `
+            <div>
+                Total Requests:
+                ${analytics.totalRequests}
+            </div>
+
+            <div>
+                Most Used Workflow:
+                ${analytics.mostUsedWorkflow}
+            </div>
+
+            <div>
+                Issue Share:
+                ${analytics.issuePercentage}%
+            </div>
+
+            <div>
+                POC Share:
+                ${analytics.pocPercentage}%
+            </div>
+
+            <div>
+                Weekend Share:
+                ${analytics.weekendPercentage}%
+            </div>
+        `;
+    }
+    catch (error) {
+
+        console.error(
+            "Failed to load workflow analytics",
+            error);
+    }
+}
+
 btnChat?.addEventListener("click", () => {
 
     resetToChatMode();
@@ -719,6 +781,7 @@ function refreshDashboard() {
     loadRecentRequests();
     loadActivityFeed();
     loadPluginHealth();
+    loadWorkflowAnalytics();
 }
 refreshDashboard();
 

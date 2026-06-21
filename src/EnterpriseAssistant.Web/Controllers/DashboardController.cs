@@ -95,4 +95,21 @@ public sealed class DashboardController : ControllerBase
         return Ok(
             _dashboardService.GetPluginHealth());
     }
+
+    /// <summary>
+    /// Business Logic:
+    /// Returns aggregated workflow analytics
+    /// for operational dashboard reporting.
+    /// </summary>
+    [HttpGet("workflow-analytics")]
+    [ProducesResponseType(
+        typeof(WorkflowAnalyticsDto),
+        StatusCodes.Status200OK)]
+    public ActionResult<WorkflowAnalyticsDto>
+    GetWorkflowAnalytics()
+    {
+        return Ok(
+            _dashboardService
+                .GetWorkflowAnalytics());
+    }
 }
