@@ -19,6 +19,7 @@ public sealed class InMemoryPocRepository
         {
             Id = Guid.NewGuid().ToString(),
             Title = request.Title,
+            Customer = request.Customer,
             BusinessJustification = request.BusinessJustification,
             Status = "Submitted",
             RequestedBy = requestedBy,

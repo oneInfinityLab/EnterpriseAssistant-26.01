@@ -8,8 +8,18 @@ using System;
 public sealed class WeekendExclusionResponse
 {
     public string Id { get; init; } = string.Empty;
+
+    public string ChangeRequest { get; init; } = string.Empty;
+
     public string ApplicationName { get; init; } = string.Empty;
+
+    public string WeekendDate { get; init; } = string.Empty;
+
+    public string Justification { get; init; } = string.Empty;
+
     public string Status { get; init; } = string.Empty;
+
     public string RequestedBy { get; init; } = string.Empty;
+
     public DateTime RequestedDate { get; init; }
 }

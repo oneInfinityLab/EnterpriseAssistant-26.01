@@ -148,16 +148,20 @@ function showWorkflow(formId) {
     document.getElementById("workflowContainer").classList.remove("d-none");
     document.getElementById(formId).classList.remove("d-none");
 }
-function submitIssue() {
+// Business Logic:
+// Submits an Issue request to the Workflow API.
+
+async function submitIssue() {
 
     const title =
-        document.getElementById("issueTitle").value;
+        document.getElementById("issueTitle").value.trim();
 
     const description =
-        document.getElementById("issueDescription").value;
-
+        document.getElementById("issueDescription").value.trim();
     const priority =
-        document.getElementById("issuePriority").value;
+        document.getElementById(
+            "issuePriority"
+        ).value;
 
     if (!title) {
 
@@ -165,111 +169,263 @@ function submitIssue() {
         return;
     }
 
-    messages.innerHTML += `
-        <div class="assistant-msg">
-            <strong>Issue Created</strong><br>
-            Id: INC-${Date.now()}<br>
-            Title: ${title}<br>
-            Priority: ${priority}<br>
-            Status: Submitted
-        </div>
-    `;
-    logPluginActivity(
-        "Issue Plugin Executed"
-    );
-    hideWorkflowForms();
+    try {
 
-    messages.scrollTop =
-        messages.scrollHeight;
+        const response =
+            await fetch(
+                "/api/workflow/issue",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+                    body: JSON.stringify({
+                        title,
+                        description,
+                        priority
+                    })
+                });
+        if (!response.ok) {
+
+            throw new Error(
+                `HTTP ${response.status}`
+            );
+        }
+        const result =
+            await response.json();
+
+        messages.innerHTML += `
+    <div class="assistant-msg">
+        <strong>Issue Created</strong><br>
+        Id: ${result.id}<br>
+        Title: ${result.title}<br>
+        Priority: ${result.priority}<br>
+        Status: ${result.status}<br>
+        Created By: ${result.createdBy}
+    </div>
+`;
+
+        logPluginActivity(
+            "Issue Plugin Executed"
+        );
+
+        document.getElementById(
+            "issueTitle"
+        ).value = "";
+
+        document.getElementById(
+            "issueDescription"
+        ).value = "";
+
+        hideWorkflowForms();
+
+        messages.scrollTop =
+            messages.scrollHeight;
+    }
+    catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Unable to submit issue."
+        );
+    }
 }
 // Business Logic:
-// Creates a demo POC request and displays
-// confirmation in the conversation panel.
+// Submits a POC request to the Workflow API
+// and displays the resulting request details.
 
-function submitPoc() {
+async function submitPoc() {
 
-    const pocName =
+    const title =
         document.getElementById("pocName").value.trim();
 
-    const customer =
-        document.getElementById("pocCustomer").value.trim();
-
-    const businessNeed =
+    const businessJustification =
         document.getElementById("pocBusinessNeed").value.trim();
-
-    if (!pocName) {
+    const customer =
+        document.getElementById(
+            "pocCustomer"
+        ).value.trim();
+    if (!title) {
 
         alert("POC Name is required.");
         return;
     }
 
-    const pocId =
-        "POC-" + Date.now();
+    try {
 
-    messages.innerHTML += `
-        <div class="assistant-msg">
-            <strong>POC Request Created</strong><br>
-            Request Id: ${pocId}<br>
-            POC: ${pocName}<br>
-            Customer: ${customer}<br>
-            Status: Submitted
-        </div>
-    `;
-    logPluginActivity(
-        "POC Plugin Executed"
-    );
-    document.getElementById("pocName").value = "";
-    document.getElementById("pocCustomer").value = "";
-    document.getElementById("pocBusinessNeed").value = "";
+        const response =
+            await fetch(
+                "/api/workflow/poc",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+                    body: JSON.stringify({
+                        title,
+                        customer,
+                        businessJustification
+                    })
+                });
 
-    hideWorkflowForms();
+        const result =
+            await response.json();
 
-    messages.scrollTop =
-        messages.scrollHeight;
+        messages.innerHTML += `
+            <div class="assistant-msg">
+                <strong>POC Request Created</strong><br>
+                Request Id: ${result.id}<br>
+                Title: ${result.title}<br>
+                Status: ${result.status}<br>
+                Customer: ${result.customer}<br>
+                Requested By: ${result.requestedBy}
+            </div>
+        `;
+
+        logPluginActivity(
+            "POC Plugin Executed"
+        );
+
+        document.getElementById(
+            "pocName"
+        ).value = "";
+
+        document.getElementById(
+            "pocCustomer"
+        ).value = "";
+
+        document.getElementById(
+            "pocBusinessNeed"
+        ).value = "";
+
+        hideWorkflowForms();
+
+        messages.scrollTop =
+            messages.scrollHeight;
+    }
+    catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Unable to submit POC request."
+        );
+    }
 }
 // Business Logic:
-// Creates a demo weekend exclusion request.
+// Submits a Weekend Exclusion request to the
+// Workflow API and displays the resulting details.
 
-function submitWeekendExclusion() {
+async function submitWeekendExclusion() {
 
+    const applicationName =
+        document.getElementById(
+            "applicationName"
+        ).value.trim();
     const changeRequest =
-        document.getElementById("changeRequest").value.trim();
+        document.getElementById(
+            "changeRequest"
+        ).value.trim();
 
     const weekendDate =
-        document.getElementById("weekendDate").value;
+        document.getElementById(
+            "weekendDate"
+        ).value;
 
     const justification =
-        document.getElementById("weekendReason").value.trim();
+        document.getElementById(
+            "weekendReason"
+        ).value.trim();
+    if (!applicationName) {
 
+        alert(
+            "Application Name is required."
+        );
+
+        return;
+    }
     if (!changeRequest) {
 
-        alert("Change Request Number is required.");
+        alert(
+            "Change Request Number is required."
+        );
+
         return;
     }
 
-    const exclusionId =
-        "WE-" + Date.now();
+    try {
 
-    messages.innerHTML += `
-        <div class="assistant-msg">
-            <strong>Weekend Exclusion Submitted</strong><br>
-            Request Id: ${exclusionId}<br>
-            Change Request: ${changeRequest}<br>
-            Weekend Date: ${weekendDate}<br>
-            Status: Pending Approval
-        </div>
-    `;
-    logPluginActivity(
-        "Weekend Exclusion Plugin Executed"
-    );
-    document.getElementById("changeRequest").value = "";
-    document.getElementById("weekendDate").value = "";
-    document.getElementById("weekendReason").value = "";
+        const response =
+            await fetch(
+                "/api/workflow/weekend",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+                    body: JSON.stringify({
+                        applicationName,
+                        changeRequest,
+                        weekendDate,
+                        justification
+                    })
+                });
 
-    hideWorkflowForms();
+        const result =
+            await response.json();
 
-    messages.scrollTop =
-        messages.scrollHeight;
+        messages.innerHTML += `
+            <div class="assistant-msg">
+                <strong>Weekend Exclusion Submitted</strong><br>
+                Request Id: ${result.id}<br>
+                Application: ${result.applicationName}<br>
+                Change Request:
+    ${result.changeRequest}<br>
+
+Weekend Date:
+    ${result.weekendDate}<br>
+
+Status:
+    ${result.status}<br>
+
+Requested By:
+    ${result.requestedBy}
+            </div>
+        `;
+
+        logPluginActivity(
+            "Weekend Exclusion Plugin Executed"
+        );
+
+        document.getElementById(
+            "changeRequest"
+        ).value = "";
+
+        document.getElementById(
+            "weekendDate"
+        ).value = "";
+
+        document.getElementById(
+            "weekendReason"
+        ).value = "";
+
+        hideWorkflowForms();
+
+        messages.scrollTop =
+            messages.scrollHeight;
+    }
+    catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Unable to submit Weekend Exclusion request."
+        );
+    }
 }
 
 // Business Logic:

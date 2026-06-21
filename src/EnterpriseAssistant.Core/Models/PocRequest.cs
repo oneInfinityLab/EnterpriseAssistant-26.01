@@ -6,5 +6,7 @@ namespace EnterpriseAssistant.Core.Models;
 public sealed class PocRequest
 {
     public string Title { get; init; } = string.Empty;
+
+    public string Customer { get; init; } = string.Empty;
     public string BusinessJustification { get; init; } = string.Empty;
 }

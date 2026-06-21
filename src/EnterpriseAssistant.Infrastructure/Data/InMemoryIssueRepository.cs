@@ -20,6 +20,7 @@ public sealed class InMemoryIssueRepository
             Id = Guid.NewGuid().ToString(),
             Title = request.Title,
             Description = request.Description,
+            Priority = request.Priority,
             Status = "Open",
             CreatedBy = createdBy,
             CreatedDate = DateTime.UtcNow

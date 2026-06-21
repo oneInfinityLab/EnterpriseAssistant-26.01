@@ -19,9 +19,22 @@ public sealed class InMemoryWeekendExclusionRepository
         {
             Id = Guid.NewGuid().ToString(),
             ApplicationName = request.ApplicationName,
+            ChangeRequest =
+                request.ChangeRequest,
+
+            WeekendDate =
+                request.WeekendDate,
+
+            Justification =
+                request.Justification,
+
             Status = "Pending",
-            RequestedBy = requestedBy,
-            RequestedDate = DateTime.UtcNow
+
+            RequestedBy =
+                requestedBy,
+
+            RequestedDate =
+                DateTime.UtcNow
         };
 
         _exclusions.Add(exclusion);
