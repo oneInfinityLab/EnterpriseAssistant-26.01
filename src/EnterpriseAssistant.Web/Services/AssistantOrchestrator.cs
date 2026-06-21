@@ -24,6 +24,9 @@ public sealed class AssistantOrchestrator : IAssistantOrchestrator
     private readonly IConversationMemoryService _conversationMemoryService;
     private readonly string _sessionId;
     private readonly PluginRegistry _pluginRegistry;
+    private readonly IssuePlugin _issuePlugin;
+    private readonly PocPlugin _pocPlugin;
+    private readonly WeekendExclusionPlugin _weekendExclusionPlugin;
 
     // Business Logic: Define keywords that trigger knowledge search.
     // These keywords match enterprise document categories and operations.
@@ -40,14 +43,19 @@ public sealed class AssistantOrchestrator : IAssistantOrchestrator
         KernelFactory kernelFactory,
         IOptions<AzureOpenAIOptions> azureOpenAIOptions,
         KnowledgeSearchPlugin knowledgeSearchPlugin,
-        IConversationMemoryService conversationMemoryService, PluginRegistry pluginRegistry)
+        IConversationMemoryService conversationMemoryService, PluginRegistry pluginRegistry,
+    IssuePlugin issuePlugin,
+    PocPlugin pocPlugin,
+    WeekendExclusionPlugin weekendExclusionPlugin)
     {
         _kernelFactory = kernelFactory;
         _azureOpenAIOptions = azureOpenAIOptions.Value;
         _knowledgeSearchPlugin = knowledgeSearchPlugin;
         _conversationMemoryService = conversationMemoryService;
         _pluginRegistry = pluginRegistry;
-
+        _issuePlugin = issuePlugin;
+        _pocPlugin = pocPlugin;
+        _weekendExclusionPlugin = weekendExclusionPlugin;
         // Business Logic: Generate a unique session ID for this orchestrator instance.
         // This enables conversation memory tracking across multiple message exchanges.
         _sessionId = Guid.NewGuid().ToString();
@@ -325,52 +333,31 @@ Azure OpenAI is currently running in Demo Mode.";
             return null;
         }
         // Business Logic:
-        // Generate a metadata driven plugin response
-        // using information provided by the Plugin Registry.
-        // This avoids hardcoded plugin knowledge within
-        // the Assistant Orchestrator.
-
-        // Business Logic:
-        // Execute simple workflow actions before
-        // returning plugin metadata.
+        // Execute enterprise workflows directly from
+        // conversational commands.
         //
-        // This demonstrates end-to-end plugin execution
-        // without requiring workflow forms.
+        // This enables users to create workflow records
+        // without navigating to dedicated UI forms.
 
         if (plugin.Name == nameof(IssuePlugin) &&
             normalizedMessage.Contains("create"))
         {
-            return new ChatResponse
-            {
-                Success = true,
-                Message =
-                    "Issue Plugin execution path detected. " +
-                    "Workflow execution support coming in P5.5."
-            };
+            return CreateIssueFromChat(
+                normalizedMessage);
         }
 
         if (plugin.Name == nameof(PocPlugin) &&
             normalizedMessage.Contains("create"))
         {
-            return new ChatResponse
-            {
-                Success = true,
-                Message =
-                    "POC Plugin execution path detected. " +
-                    "Workflow execution support coming in P5.5."
-            };
+            return CreatePocFromChat(
+                normalizedMessage);
         }
 
         if (plugin.Name == nameof(WeekendExclusionPlugin) &&
             normalizedMessage.Contains("create"))
         {
-            return new ChatResponse
-            {
-                Success = true,
-                Message =
-                    "Weekend Exclusion Plugin execution path detected. " +
-                    "Workflow execution support coming in P5.5."
-            };
+            return CreateWeekendExclusionFromChat(
+                normalizedMessage);
         }
 
         // Business Logic:
@@ -414,6 +401,181 @@ Azure OpenAI is currently running in Demo Mode.";
             _ => $"Unknown plugin: {pluginName}"
         };
     }
+
+    /// <summary>
+    /// Business Logic:
+    /// Creates an Issue directly from a chat command.
+    ///
+    /// This enables conversational workflow execution
+    /// without requiring users to navigate to the
+    /// dedicated Issue form.
+    ///
+    /// Example:
+    /// "create issue login failure"
+    /// </summary>
+    private ChatResponse CreateIssueFromChat(
+        string message)
+    {
+        var title =
+            message
+                .Replace(
+                    "create issue",
+                    string.Empty,
+                    StringComparison.OrdinalIgnoreCase)
+                .Trim();
+
+        if (string.IsNullOrWhiteSpace(title))
+        {
+            title = "Issue created from chat";
+        }
+
+        var request =
+            new IssueRequest
+            {
+                Title = title,
+                Description =
+                    "Created from Enterprise Assistant chat.",
+                Priority = "Medium"
+            };
+
+        var result =
+            _issuePlugin.CreateIssue(
+                request,
+                new System.Security.Claims.ClaimsPrincipal(
+                    new System.Security.Claims.ClaimsIdentity(
+                        new[]
+                        {
+                        new System.Security.Claims.Claim(
+                            System.Security.Claims.ClaimTypes.Name,
+                            "Demo User")
+                        })));
+
+        return new ChatResponse
+        {
+            Success = true,
+            Message =
+                $"Issue Created\n\n" +
+                $"Id: {result.Id}\n" +
+                $"Title: {result.Title}\n" +
+                $"Priority: {result.Priority}\n" +
+                $"Status: {result.Status}\n" +
+                $"Created By: {result.CreatedBy}"
+        };
+    }
+
+    /// <summary>
+    /// Business Logic:
+    /// Creates a Proof Of Concept request directly
+    /// from a conversational command.
+    ///
+    /// Example:
+    /// "create poc customer demo"
+    /// </summary>
+    private ChatResponse CreatePocFromChat(
+        string message)
+    {
+        var title =
+            message
+                .Replace(
+                    "create poc",
+                    string.Empty,
+                    StringComparison.OrdinalIgnoreCase)
+                .Trim();
+
+        if (string.IsNullOrWhiteSpace(title))
+        {
+            title = "POC created from chat";
+        }
+
+        var request =
+            new PocRequest
+            {
+                Title = title,
+                BusinessJustification =
+                    "Created from Enterprise Assistant chat."
+            };
+
+        var result =
+            _pocPlugin.CreatePoc(
+                request,
+                new System.Security.Claims.ClaimsPrincipal(
+                    new System.Security.Claims.ClaimsIdentity(
+                        new[]
+                        {
+                        new System.Security.Claims.Claim(
+                            System.Security.Claims.ClaimTypes.Name,
+                            "Demo User")
+                        })));
+
+        return new ChatResponse
+        {
+            Success = true,
+            Message =
+                $"POC Request Created\n\n" +
+                $"Id: {result.Id}\n" +
+                $"Title: {result.Title}\n" +
+                $"Status: {result.Status}\n" +
+                $"Requested By: {result.RequestedBy}"
+        };
+    }
+
+    /// <summary>
+    /// Business Logic:
+    /// Creates a Weekend Exclusion request directly
+    /// from a conversational command.
+    ///
+    /// Example:
+    /// "create weekend release deployment"
+    /// </summary>
+    private ChatResponse CreateWeekendExclusionFromChat(
+        string message)
+    {
+        var applicationName =
+            message
+                .Replace(
+                    "create weekend",
+                    string.Empty,
+                    StringComparison.OrdinalIgnoreCase)
+                .Trim();
+
+        if (string.IsNullOrWhiteSpace(applicationName))
+        {
+            applicationName =
+                "Weekend request created from chat";
+        }
+
+        var request =
+            new WeekendExclusionRequest
+            {
+                ApplicationName = applicationName
+            };
+
+        var result =
+            _weekendExclusionPlugin
+                .CreateWeekendExclusion(
+                    request,
+                    new System.Security.Claims.ClaimsPrincipal(
+                        new System.Security.Claims.ClaimsIdentity(
+                            new[]
+                            {
+                            new System.Security.Claims.Claim(
+                                System.Security.Claims.ClaimTypes.Name,
+                                "Demo User")
+                            })));
+
+        return new ChatResponse
+        {
+            Success = true,
+            Message =
+                $"Weekend Exclusion Submitted\n\n" +
+                $"Id: {result.Id}\n" +
+                $"Application: {result.ApplicationName}\n" +
+                $"Status: {result.Status}\n" +
+                $"Requested By: {result.RequestedBy}"
+        };
+    }
+
+
 
     /// <summary>
     /// Business Logic: Format knowledge search results into a structured chat response.

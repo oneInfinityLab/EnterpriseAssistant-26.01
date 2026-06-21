@@ -98,7 +98,7 @@ async function sendMessage() {
 
         messages.innerHTML += `
             <div class="assistant-msg">
-                ${result.response}
+                ${result.response.replace(/\n/g, "<br>")}
             </div>
         `;
 
