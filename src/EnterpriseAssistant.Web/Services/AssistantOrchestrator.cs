@@ -289,8 +289,15 @@ Azure OpenAI is currently running in Demo Mode.";
 
     /// <summary>
     /// Business Logic:
-    /// Routes and executes enterprise plugins
-    /// discovered from user input.
+    /// Attempts to discover and route execution
+    /// to an appropriate enterprise workflow plugin.
+    ///
+    /// Current implementation advertises plugin
+    /// capabilities and supported actions.
+    ///
+    /// Future versions will invoke Semantic Kernel
+    /// function calling and execute workflow actions
+    /// automatically.
     /// </summary>
     private ChatResponse? AttemptPluginRouting(
         string message)
@@ -304,14 +311,45 @@ Azure OpenAI is currently running in Demo Mode.";
             return null;
         }
 
-        var executionResult =
-            ExecutePlugin(
-                discoveredPlugin);
+        var response =
+            discoveredPlugin switch
+            {
+                nameof(IssuePlugin) =>
+                    """
+                Issue Plugin available.
+
+                Supported actions:
+                • Create Issue
+                • View Issue Status
+                • View My Issues
+                """,
+
+                nameof(PocPlugin) =>
+                    """
+                POC Plugin available.
+
+                Supported actions:
+                • Submit POC
+                • View My POCs
+                """,
+
+                nameof(WeekendExclusionPlugin) =>
+                    """
+                Weekend Exclusion Plugin available.
+
+                Supported actions:
+                • Create Weekend Exclusion
+                • View My Requests
+                """,
+
+                _ =>
+                    $"{discoveredPlugin} discovered."
+            };
 
         return new ChatResponse
         {
             Success = true,
-            Message = executionResult
+            Message = response
         };
     }
 
