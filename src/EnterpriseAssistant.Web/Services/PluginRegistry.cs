@@ -85,4 +85,23 @@ public sealed class PluginRegistry
             .Select(plugin => plugin.Name)
             .ToArray();
     }
+
+    /// <summary>
+    /// Business Logic:
+    /// Retrieves a registered plugin by name.
+    ///
+    /// Used by the Assistant Orchestrator to
+    /// dynamically obtain plugin metadata and
+    /// capabilities after discovery has occurred.
+    /// </summary>
+    public IPlugin? GetPlugin(
+        string pluginName)
+    {
+        return _registeredPlugins
+            .FirstOrDefault(
+                plugin =>
+                    plugin.Name.Equals(
+                        pluginName,
+                        StringComparison.OrdinalIgnoreCase));
+    }
 }

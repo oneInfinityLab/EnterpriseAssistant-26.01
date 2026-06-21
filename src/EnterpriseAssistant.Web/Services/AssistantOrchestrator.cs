@@ -286,21 +286,20 @@ Azure OpenAI is currently running in Demo Mode.";
 
         return null;
     }
-
     /// <summary>
     /// Business Logic:
     /// Attempts to discover and route execution
     /// to an appropriate enterprise workflow plugin.
     ///
-    /// Current implementation advertises plugin
-    /// capabilities and supported actions.
+    /// Routing is metadata driven and uses the
+    /// Plugin Registry as the source of truth
+    /// for plugin capabilities.
     ///
     /// Future versions will invoke Semantic Kernel
-    /// function calling and execute workflow actions
-    /// automatically.
+    /// function calling and workflow execution.
     /// </summary>
     private ChatResponse? AttemptPluginRouting(
-        string message)
+    string message)
     {
         var discoveredPlugin =
             DiscoverPlugin(message);
@@ -311,40 +310,24 @@ Azure OpenAI is currently running in Demo Mode.";
             return null;
         }
 
+        var plugin =
+            _pluginRegistry.GetPlugin(
+                discoveredPlugin);
+
+        if (plugin == null)
+        {
+            return null;
+        }
+        // Business Logic:
+        // Generate a metadata driven plugin response
+        // using information provided by the Plugin Registry.
+        // This avoids hardcoded plugin knowledge within
+        // the Assistant Orchestrator.
+
         var response =
-            discoveredPlugin switch
-            {
-                nameof(IssuePlugin) =>
-                    """
-                Issue Plugin available.
-
-                Supported actions:
-                • Create Issue
-                • View Issue Status
-                • View My Issues
-                """,
-
-                nameof(PocPlugin) =>
-                    """
-                POC Plugin available.
-
-                Supported actions:
-                • Submit POC
-                • View My POCs
-                """,
-
-                nameof(WeekendExclusionPlugin) =>
-                    """
-                Weekend Exclusion Plugin available.
-
-                Supported actions:
-                • Create Weekend Exclusion
-                • View My Requests
-                """,
-
-                _ =>
-                    $"{discoveredPlugin} discovered."
-            };
+            $"{plugin.Name} available.\n\n" +
+            $"Purpose: {plugin.Description}\n\n" +
+            $"Discovery Keywords: {string.Join(", ", plugin.Keywords)}";
 
         return new ChatResponse
         {

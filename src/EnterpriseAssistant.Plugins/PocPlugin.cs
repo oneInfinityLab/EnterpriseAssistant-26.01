@@ -18,9 +18,13 @@ public sealed class PocPlugin : IPlugin
 
     public string Name => nameof(PocPlugin);
 
+    /// <summary>
+    /// Business Logic:
+    /// Describes the primary purpose of the plugin
+    /// for discovery and orchestration scenarios.
+    /// </summary>
     public string Description =>
-    "Handles proof of concept request workflows.";
-
+        "Submits and tracks proof of concept requests.";
     public IReadOnlyList<string> Keywords =>
     [
         "poc",

@@ -17,8 +17,13 @@ public sealed class IssuePlugin : IPlugin
     private readonly IUserContextService _userContextService;
 
     public string Name => nameof(IssuePlugin);
+    /// <summary>
+    /// Business Logic:
+    /// Describes the primary purpose of the plugin
+    /// for discovery and orchestration scenarios.
+    /// </summary>
     public string Description =>
-    "Handles issue creation and issue tracking workflows.";
+        "Creates, tracks, and manages enterprise support issues.";
 
     public IReadOnlyList<string> Keywords =>
     [

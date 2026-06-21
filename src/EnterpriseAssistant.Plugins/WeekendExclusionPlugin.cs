@@ -18,8 +18,13 @@ public sealed class WeekendExclusionPlugin : IPlugin
 
     public string Name => nameof(WeekendExclusionPlugin);
 
+    /// <summary>
+    /// Business Logic:
+    /// Describes the primary purpose of the plugin
+    /// for discovery and orchestration scenarios.
+    /// </summary>
     public string Description =>
-    "Handles weekend exclusion workflows.";
+        "Creates and tracks weekend exclusion requests.";
 
     public IReadOnlyList<string> Keywords =>
     [
